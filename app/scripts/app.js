@@ -8,7 +8,8 @@ var app = angular.module('madbid', [
   'madbid.controller',
   'madbid.service',
   'madbid.model',
-  'madbid.directive'
+  'madbid.directive',
+  'LocalStorageModule'
 ]);
 
 angular.module('madbid.controller', []);
@@ -16,4 +17,12 @@ angular.module('madbid.service', []);
 angular.module('madbid.model', []);
 angular.module('madbid.directive', []);
 
-app.run(angular.noop);
+
+app.config(['localStorageServiceProvider', function(localStorageServiceProvider){
+  localStorageServiceProvider.setPrefix('madbid-ia');
+}]);
+
+app.run(['localStorageService', 'AuctionModel', function(localStorageService, AuctionModel){
+   var db = localStorageService.get('full-cache');
+  AuctionModel.setBootData(db);
+}]);

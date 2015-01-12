@@ -16,7 +16,12 @@ var AuctionController = function($scope, $timeout, NetworkService, AuctionModel)
       AuctionModel.handleUpdate(res);
     })
   });
+
+  this.resetCache = function(){
+    AuctionModel.clearCache();
+  };
 };
+
 
 AuctionController.$inject= ['$scope', '$timeout', 'NetworkService', 'AuctionModel'];
 

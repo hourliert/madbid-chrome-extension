@@ -3,13 +3,24 @@
  */
 
 angular.module('madbid.model')
-  .service('AuctionModel', function(){
+  .service('AuctionModel', ['localStorageService', function(localStorageService){
     var db = {
         items : {},
         bidders: {}
       };
 
    return {
+     setBootData: function(data){
+       if (data && data.items && data.bidders){
+         angular.extend(db.items, data.items);
+         angular.extend(db.bidders, data.bidders);
+       }
+     },
+     clearCache: function(){
+       localStorageService.clearAll();
+       for (var i in db.items) delete db.items[i];
+       for (var j in db.bidders) delete db.bidders[j];
+     },
      getItems : function(){
        return db.items;
      },
@@ -75,6 +86,7 @@ angular.module('madbid.model')
          }
        }
        console.log(db);
+       localStorageService.set('full-cache', db);
      }
    }
-  });
+  }]);
