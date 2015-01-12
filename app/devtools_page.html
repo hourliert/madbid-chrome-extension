@@ -1,24 +1,60 @@
 <!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <!-- build:css styles/vendor.css -->
-        <!-- bower:css -->
-        <!-- endbower -->
-        <!-- endbuild -->
-        <!-- build:css styles/main.css -->
-        <link href="styles/main.css" rel="stylesheet">
-        <!-- endbuild -->
-    </head>
-    <body>
-        <h1>MadBid extension</h1>
+<html ng-csp ng-app="madbid">
+    <body ng-controller="AuctionController as ctrl">
 
-        <form id="select-auction">
-          <p><label for="auction-id">Madbid auction ID</label><br />
-            <input type="number" id="auction-id" name="id" value="" /></p>
-          <p>
-            <input id="save" type="submit" value="Validate" />
-          </p>
-        </form>
+        {{ctrl.test}}
+
+        <h1>MadBid extension</h1>
+        <p>You can select an auction ID or select a bidder to view usefull informations.</p>
+
+        <label>Select an auction :
+          <select ng-model="ctrl.selection.selectedItem" ng-options="key as key for (key,val) in ctrl.itemsModel">
+            <option value="">--Empty--</option>
+          </select>
+        </label>
+
+        <label>Select a bidder :
+          <select ng-model="ctrl.selection.selectedBidder" ng-options="key as key for (key,val) in ctrl.biddersModel">
+            <option value="">--Empty--</option>
+          </select>
+        </label>
+
+
+        <auction-info ng-if="ctrl.selection.selectedItem"
+                      ng-model="ctrl.itemsModel"
+                      auction-id="ctrl.selection.selectedItem"></auction-info>
+
+        <bidder-info ng-if="ctrl.selection.selectedBidder && !ctrl.selection.selectedItem"
+                     ng-model="ctrl.biddersModel"
+                     bidder-name="ctrl.selection.selectedBidder"></bidder-info>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <script src="libs/angular.min.js"></script>
+        <script src="libs/jquery.min.js"></script>
+        <script src="libs/highcharts.js"></script>
+
+
+        <script src="scripts/app.js"></script>
+        <script src="scripts/controllers/AuctionController.js"></script>
+        <script src="scripts/models/AuctionModel.js"></script>
+        <script src="scripts/services/NetworkService.js"></script>
+        <script src="scripts/directives/AuctionInfoDirective.js"></script>
+        <script src="scripts/directives/BidderInfoDirective.js"></script>
     </body>
 </html>
