@@ -1,29 +1,29 @@
 {
-  "name": "madbid",
-  "version": "0.0.1",
-  "manifest_version": 2,
-  "description": "Madbid IA",
-  "icons": {
-    "16": "images/icon-16.png",
-    "128": "images/icon-128.png"
-  },
-  "default_locale": "en",
-  "background": {
-    "scripts": [
-      "scripts/chrome/chromereload.js",
-      "scripts/chrome/background.js"
+    "name": "madbid",
+    "version": "0.0.2",
+    "manifest_version": 2,
+    "description": "Madbid IA",
+    "icons": {
+        "16": "images/icon-16.png",
+        "128": "images/icon-128.png"
+    },
+    "default_locale": "en",
+    "background": {
+        "scripts": [
+            "scripts/chrome/chromereload.js",
+            "scripts/chrome/background.js"
+        ]
+    },
+    "devtools_page": "devtools.html",
+    "omnibox": {
+        "keyword": "madbid"
+    },
+    "permissions": [
+        "tabs",
+        "history",
+        "management",
+        "webRequest",
+        "http://*/*",
+        "https://*/*"
     ]
-  },
-  "devtools_page": "devtools.html",
-  "omnibox": {
-    "keyword": "madbid"
-  },
-  "permissions": [
-    "tabs",
-    "history",
-    "management",
-    "webRequest",
-    "http://*/*",
-    "https://*/*"
-  ]
 }

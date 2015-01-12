@@ -2,7 +2,7 @@
  * Created by thomashourlier on 12/01/15.
  */
 
-var AuctionController = function(NetworkService, AuctionModel){
+var AuctionController = function($scope, $timeout, NetworkService, AuctionModel){
   this.itemsModel = AuctionModel.getItems();
   this.biddersModel = AuctionModel.getBidders();
 
@@ -11,10 +11,14 @@ var AuctionController = function(NetworkService, AuctionModel){
     selectedBidder : ''
   };
 
-  NetworkService.addListener(AuctionModel.handleUpdate);
+  NetworkService.addListener(function(res){
+    $scope.$apply(function(){
+      AuctionModel.handleUpdate(res);
+    })
+  });
 };
 
-AuctionController.$inject= ['NetworkService', 'AuctionModel'];
+AuctionController.$inject= ['$scope', '$timeout', 'NetworkService', 'AuctionModel'];
 
 
 angular.module('madbid.controller')

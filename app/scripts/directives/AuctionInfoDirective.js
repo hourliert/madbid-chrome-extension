@@ -16,9 +16,7 @@ angular.module('madbid.directive')
 
      },
      link: function($scope, $element, attrs){
-       $scope.$watch('ngModel', function(newVal){
-         console.log('model');
-       }, true);
+
      }
    };
   });

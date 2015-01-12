@@ -11,7 +11,7 @@ angular.module('madbid.directive')
         ngModel: '=',
         bidderName: '='
       },
-      template: '',
+      template: '<div>{{ngModel[bidderName]}}</div>',
       controller: function(){
 
       },
