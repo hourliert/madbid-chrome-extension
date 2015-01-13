@@ -2,9 +2,13 @@
  * Created by thomashourlier on 12/01/15.
  */
 
-var AuctionController = function($scope, $timeout, NetworkService, AuctionModel){
+var AuctionController = function($scope, $timeout, $interval, NetworkService, AuctionModel){
+  var timer;
+
   this.itemsModel = AuctionModel.getItems();
   this.biddersModel = AuctionModel.getBidders();
+
+  this.time = new Date();
 
   this.selection = {
     selectedItem : '',
@@ -19,11 +23,21 @@ var AuctionController = function($scope, $timeout, NetworkService, AuctionModel)
 
   this.resetCache = function(){
     AuctionModel.clearCache();
+    this.selection.selectedBidder = '';
+    this.selection.selectedItem = '';
   };
+
+  timer = $interval(angular.bind(this, function(){
+   this.time = new Date();
+  }), 500);
+
+  $scope.$on('$destroy', function(){
+    $interval.cancel(timer);
+  });
 };
 
 
-AuctionController.$inject= ['$scope', '$timeout', 'NetworkService', 'AuctionModel'];
+AuctionController.$inject= ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
 
 
 angular.module('madbid.controller')

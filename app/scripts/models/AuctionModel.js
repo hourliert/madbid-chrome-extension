@@ -28,8 +28,7 @@ angular.module('madbid.model')
        return db.bidders;
      },
      handleUpdate : function(json){
-       if (json.cmd === '/update') {
-         var items = json.response.items,
+       var items = json.response.items,
            item,
            localItem,
            localBidder,
@@ -37,6 +36,7 @@ angular.module('madbid.model')
            i,
            ii;
 
+       if (json.cmd === '/update') {
          for (i = 0, ii = items.length; i < ii; i++) {
            item = items[i];
            localItem = db.items[item['auction_id']];
@@ -65,7 +65,6 @@ angular.module('madbid.model')
                }
                localBidder = db.bidders[item['highest_bidder']];
              }
-
              biddersBid = localBidder.bids[item['auction_id']];
 
              if (!biddersBid) {
@@ -84,7 +83,21 @@ angular.module('madbid.model')
              }
            }
          }
+       } else if (json.cmd === '/load/current'){
+         for (i = 0, ii = items.length; i < ii; i++) {
+           item = items[i];
+           localItem = db.items[item['auction_id']];
+
+           if (!localItem) {
+              db.items[item['auction_id']] = {
+                updatePoints: []
+              };
+             localItem = db.items[item['auction_id']];
+           }
+           angular.extend(localItem, item);
+         }
        }
+
        console.log(db);
        localStorageService.set('full-cache', db);
      }

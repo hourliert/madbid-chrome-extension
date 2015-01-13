@@ -16,7 +16,7 @@ angular.module('madbid.service')
             json = JSON.parse(content);
 
             for (i = 0, ii = listeners.length ; i < ii ; i++){
-              listeners[i](json);
+              listeners[i](json || {});
             }
           } catch(e){
           }
