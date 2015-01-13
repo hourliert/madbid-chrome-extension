@@ -11,7 +11,6 @@ angular.module('madbid.directive')
        ngModel: '=',
        auctionId: '='
      },
-     template: '<div id="container-auction-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>',
      controller: function(){
 
      },
@@ -20,7 +19,9 @@ angular.module('madbid.directive')
            item,
            data = [],
            i,
-           ii;
+           ii,
+           container,
+           highCharts;
 
        console.log(itemPoints);
 
@@ -29,9 +30,12 @@ angular.module('madbid.directive')
          data.push([item.date, item.price]);
        }
 
+       container = angular.element('<div id="container-auction-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');
+       angular.element($element[0]).append(container);
+       container = $($element[0].firstChild);
 
 
-       $('#container-auction-info').highcharts({
+       container.highcharts({
          chart: {
            type: 'scatter',
            zoomType: 'xy'
@@ -96,6 +100,10 @@ angular.module('madbid.directive')
            data: data
          }]
        });
+
+       highCharts = container.highcharts();
+       console.log(highCharts);
+
      }
    };
   });
