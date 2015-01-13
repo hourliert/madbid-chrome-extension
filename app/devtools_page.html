@@ -21,7 +21,7 @@
         <h2>{{ctrl.time | date:'H:mm:ss'}}</h2>
 
 
-        <p ng-if="ctrl.selection.selectedItem">{{ctrl.itemsModel[ctrl.selection.selectedItem]['auction_data'].timeout}}</p>
+        <h3 ng-if="ctrl.selection.selectedItem">{{ctrl.itemsModel[ctrl.selection.selectedItem].remaining}} seconds remain</h3>
 
         <auction-info ng-if="ctrl.selection.selectedItem"
                       ng-model="ctrl.itemsModel"

@@ -3,11 +3,35 @@
  */
 
 angular.module('madbid.model')
-  .service('AuctionModel', ['localStorageService', function(localStorageService){
+  .service('AuctionModel', ['localStorageService', '$interval', function(localStorageService, $interval){
     var db = {
-        items : {},
-        bidders: {}
-      };
+          items : {},
+          bidders: {}
+        },
+        timer,
+        reference;
+
+      timer = $interval(function(){
+        var i,
+            item,
+            lastPoint,
+            referenceDate = new Date(reference);
+
+
+        for (i in db.items){
+          item = db.items[i];
+          lastPoint = item.updatePoints[item.updatePoints.length -1];
+
+          if (lastPoint){
+           item.remaining = (new Date(lastPoint.endDate) - referenceDate)/1000;
+          }
+        }
+
+        referenceDate.setSeconds(referenceDate.getSeconds() + 1);
+        reference = referenceDate.toUTCString();
+      }, 1000);
+
+
 
    return {
      setBootData: function(data){
@@ -35,6 +59,8 @@ angular.module('madbid.model')
            biddersBid,
            i,
            ii;
+
+       reference = json.response.reference.timestamp;
 
        if (json.cmd === '/update') {
          for (i = 0, ii = items.length; i < ii; i++) {
