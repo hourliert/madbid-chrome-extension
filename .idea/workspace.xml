@@ -49,8 +49,8 @@
       <file leaf-file-name="AuctionInfoDirective.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/scripts/directives/AuctionInfoDirective.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.32491767" vertical-offset="754" max-vertical-offset="1710">
-              <caret line="70" column="24" selection-start-line="70" selection-start-column="24" selection-end-line="70" selection-end-column="24" />
+            <state vertical-scroll-proportion="0.6377607" vertical-offset="754" max-vertical-offset="1710">
+              <caret line="89" column="14" selection-start-line="89" selection-start-column="14" selection-end-line="89" selection-end-column="14" />
               <folding>
                 <marker date="1421130292000" expanded="true" signature="770:817" placeholder="..." />
               </folding>
@@ -832,8 +832,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/directives/AuctionInfoDirective.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32491767" vertical-offset="754" max-vertical-offset="1710">
-          <caret line="70" column="24" selection-start-line="70" selection-start-column="24" selection-end-line="70" selection-end-column="24" />
+        <state vertical-scroll-proportion="0.6377607" vertical-offset="754" max-vertical-offset="1710">
+          <caret line="89" column="14" selection-start-line="89" selection-start-column="14" selection-end-line="89" selection-end-column="14" />
           <folding>
             <marker date="1421130292000" expanded="true" signature="770:817" placeholder="..." />
           </folding>
