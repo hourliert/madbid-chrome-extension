@@ -29,7 +29,7 @@ var AuctionController = function($scope, $timeout, $interval, NetworkService, Au
 
   timer = $interval(angular.bind(this, function(){
    this.time = new Date();
-  }), 500);
+  }), 1000);
 
   $scope.$on('$destroy', function(){
     $interval.cancel(timer);

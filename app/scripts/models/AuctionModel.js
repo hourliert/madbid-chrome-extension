@@ -124,7 +124,6 @@ angular.module('madbid.model')
          }
        }
 
-       console.log(db);
        localStorageService.set('full-cache', db);
      }
    }

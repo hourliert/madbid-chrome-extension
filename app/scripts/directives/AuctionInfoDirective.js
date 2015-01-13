@@ -41,7 +41,7 @@ angular.module('madbid.directive')
 
        container.highcharts({
          chart: {
-           type: 'scatter',
+           type: 'line',
            zoomType: 'xy'
          },
          title: {
@@ -76,7 +76,8 @@ angular.module('madbid.directive')
            borderWidth: 1
          },
          plotOptions: {
-           scatter: {
+           line: {
+             animation: false,
              marker: {
                radius: 3,
                states: {
@@ -94,15 +95,36 @@ angular.module('madbid.directive')
                }
              },
              tooltip: {
+               animation: false,
                headerFormat: '<b>{series.name}</b><br>',
                pointFormat: 'Bidder <strong>{point.name}</strong><br/>{point.x}<br/><strong>{point.y}</strong> euros'
+             },
+             dataGrouping: {
+               approximation: 'average',
+               enabled: 'true',
+               groupPixelWidth: 2,
+               dateTimeLabelFormats: {
+                 second: '%H:%M:%S',
+                 minute: '%H:%M',
+                 hour: '%H:%M',
+                 day: '%e. %b',
+                 week: '%e. %b',
+                 month: '%b \'%y',
+                 year: '%Y'
+               }
              }
+           },
+           serie: {
+             animation: false
            }
          },
          series: [{
            name: 'Bids',
            color: 'rgba(119,152,191,0.9)',
-           data: data
+           data: data,
+           turboThreshold: 0,
+           shadow: false,
+           animation: false
          }]
        });
 
@@ -146,7 +168,10 @@ angular.module('madbid.directive')
              highCharts.addSeries({
                name: 'Bids',
                color: 'rgba(119,152,191,0.9)',
-               data: data
+               data: data,
+               turboThreshold: 0,
+               shadow: false,
+               animation: false
              });
 
            } else {
@@ -168,8 +193,6 @@ angular.module('madbid.directive')
            highCharts.setTitle({
              text: newVal[1].title || $scope.auctionId
            });
-
-           console.log(+new Date() - start, 'ms');
          }
        }, true);
      }
