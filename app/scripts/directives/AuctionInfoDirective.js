@@ -16,24 +16,23 @@ angular.module('madbid.directive')
      },
      link: function($scope, $element, attrs){
        var itemPoints = $scope.ngModel[$scope.auctionId].updatePoints,
+           auctionIndex = {},
            item,
            data = [],
+           container,
            i,
            ii,
-           container,
            highCharts;
-
-       console.log(itemPoints);
 
        for (i = 0, ii = itemPoints.length ; i < ii ; i++){
          item = itemPoints[i];
          data.push([item.date, item.price]);
+         auctionIndex[+new Date(item.date) + '_' + item.price] = i;
        }
 
        container = angular.element('<div id="container-auction-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');
        angular.element($element[0]).append(container);
        container = $($element[0].firstChild);
-
 
        container.highcharts({
          chart: {
@@ -96,14 +95,33 @@ angular.module('madbid.directive')
          },
          series: [{
            name: 'Bids',
-           color: 'rgba(223, 83, 83, .5)',
+           color: 'rgba(119,152,191,0.9)',
            data: data
          }]
        });
 
        highCharts = container.highcharts();
-       console.log(highCharts);
 
+       $scope.$watch(function(){
+         return $scope.ngModel[$scope.auctionId];
+       }, function(newVal, oldVal){
+         if(newVal && newVal !== oldVal){
+           var itemPoints = newVal.updatePoints,
+               item,
+               index,
+               i,
+               ii;
+
+           for (i = 0, ii = itemPoints.length ; i < ii ; i++){
+             item = itemPoints[i];
+             index = +new Date(item.date) + '_' + item.price;
+             if (!auctionIndex[index]){
+               highCharts.series[0].addPoint([item.date, item.price], true);
+               auctionIndex[index] = highCharts.series[0].data.length - 1;
+             }
+           }
+         }
+       }, true);
      }
    };
   });
