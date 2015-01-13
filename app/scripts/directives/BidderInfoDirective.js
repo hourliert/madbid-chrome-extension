@@ -9,14 +9,148 @@ angular.module('madbid.directive')
       require: '^ngModel',
       scope: {
         ngModel: '=',
-        bidderName: '='
+        ngItemsModel: '=',
+        bidderName: '=',
+        auctionId: '='
       },
       template: '<div>{{ngModel[bidderName]}}</div>',
       controller: function(){
 
       },
       link: function($scope, $element, attrs){
+          var container,
+            i,
+            j,
+            ii,
+            oldAuctionId = $scope.auctionId,
+            bidder,
+            categorie = [],
+            data = [],
+            bidderIndex = {},
+            highCharts;
 
+          for (i in $scope.ngModel){
+             bidder = $scope.ngModel[i];
+             for (j in bidder.bids){
+                if (j === $scope.auctionId){
+                    data.push({
+                        name: i,
+                        y: bidder.bids[j].updatePoints.length
+                    });
+                    bidderIndex[i] = data.length - 1;
+                    break;
+                }
+             }
+          }
+
+
+          container = angular.element('<div id="container-bidders-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');
+          angular.element($element[0]).append(container);
+          container = $($element[0].firstChild);
+
+          container.highcharts({
+              chart: {
+                  type: 'column'
+              },
+              title: {
+                  text: 'Bidders for ' + $scope.ngItemsModel[$scope.auctionId].title || $scope.auctionId
+              },
+              subtitle: {
+                  text: 'Since last reset / launch'
+              },
+              yAxis: {
+                  min: 0,
+                  title: {
+                      text: 'Number of bids'
+                  }
+              },
+              xAxis: {
+                  type: 'category'
+              },
+              tooltip: {
+                  headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                  pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                  '<td style="padding:0"><b>{point.y}</b></td></tr>',
+                  footerFormat: '</table>',
+                  shared: true,
+                  useHTML: true
+              },
+              plotOptions: {
+                  column: {
+                      pointPadding: 0.2,
+                      borderWidth: 0
+                  }
+              },
+              series: [{
+                  name: 'Bids',
+                  data: data
+              }]
+          });
+
+          highCharts = container.highcharts();
+
+
+          $scope.$watch(function(){
+              return $scope.auctionId + $scope.ngItemsModel[$scope.auctionId].updatePoints.length;
+          }, function(newVal){
+              if (newVal){
+                  var start = +new Date(),
+                      i,
+                      j,
+                      bidder,
+                      highchartPoint,
+                      categorie = [],
+                      data = [];
+
+                  if ($scope.auctionId !== oldAuctionId){
+                      for (i in $scope.ngModel){
+                          bidder = $scope.ngModel[i];
+                          for (j in bidder.bids){
+                              if (j === $scope.auctionId){
+                                  data.push({
+                                      name: i,
+                                      y: bidder.bids[j].updatePoints.length
+                                  });
+                                  break;
+                              }
+                          }
+                      }
+
+                      highCharts.series[0].remove(true);
+                      highCharts.addSeries({
+                          name: 'Bids',
+                          data: data
+                      });
+                  } else {
+                      for (i in $scope.ngModel){
+                          bidder = $scope.ngModel[i];
+
+                          highchartPoint = highCharts.series[0].data[bidderIndex[i]];
+                          for (j in bidder.bids){
+                              if (j === $scope.auctionId){
+                                  if (highchartPoint && (bidder.bids[j].updatePoints.length !== highchartPoint.y)){
+                                      highchartPoint.update({
+                                          name: i,
+                                          y: bidder.bids[j].updatePoints.length
+                                      }, true);
+                                      categorie.push(i);
+                                  }
+                                  break;
+                              }
+                          }
+                      }
+                  }
+
+
+
+                  highCharts.setTitle({
+                      text: 'Bidders for ' + $scope.ngItemsModel[$scope.auctionId].title || $scope.auctionId
+                  });
+                  oldAuctionId = $scope.auctionId;
+
+                  console.log('bidders', (+new Date() - start), 'ms');
+              }
+          });
       }
     };
   });

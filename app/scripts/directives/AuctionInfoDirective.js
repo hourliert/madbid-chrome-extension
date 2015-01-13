@@ -23,6 +23,7 @@ angular.module('madbid.directive')
            container,
            i,
            ii,
+           oldAuctionId = $scope.auctionId,
            highCharts;
 
        for (i = 0, ii = itemPoints.length ; i < ii ; i++){
@@ -45,7 +46,7 @@ angular.module('madbid.directive')
            zoomType: 'xy'
          },
          title: {
-           text: 'Bids over time for ' + $scope.ngModel[$scope.auctionId].title || $scope.auctionId
+           text: 'Bids for ' + $scope.ngModel[$scope.auctionId].title || $scope.auctionId
          },
          subtitle: {
            text: 'Since last reset / launch'
@@ -141,17 +142,17 @@ angular.module('madbid.directive')
        });
 
        $scope.$watch(function(){
-         return [$scope.auctionId, $scope.ngModel[$scope.auctionId]];
-       }, function(newVal, oldVal){
-         if(newVal && newVal[0] && newVal[1] && newVal !== oldVal){
+         return $scope.auctionId + $scope.ngModel[$scope.auctionId].updatePoints.length;
+       }, function(newVal){
+         if(newVal){
            var start = +new Date(),
-               itemPoints = newVal[1].updatePoints,
+               itemPoints = $scope.ngModel[$scope.auctionId].updatePoints,
                item,
                index,
                i,
                ii;
 
-           if (newVal[0] !== oldVal[0]){
+           if ($scope.auctionId !== oldAuctionId){
              var data = [];
 
              for (i = 0, ii = itemPoints.length ; i < ii ; i++){
@@ -191,10 +192,13 @@ angular.module('madbid.directive')
            }
 
            highCharts.setTitle({
-             text: newVal[1].title || $scope.auctionId
+             text: 'Bids for ' + $scope.ngModel[$scope.auctionId].title || $scope.auctionId
            });
+
+           oldAuctionId = $scope.auctionId;
+           console.log('bids', (+new Date() - start), 'ms');
          }
-       }, true);
+       });
      }
    };
   });

@@ -22,14 +22,17 @@
 
 
         <h3 ng-if="ctrl.selection.selectedItem">{{ctrl.itemsModel[ctrl.selection.selectedItem].remaining}} seconds remain</h3>
+        <h3 ng-if="ctrl.selection.selectedItem">{{ctrl.itemsModel[ctrl.selection.selectedItem].price}} euros</h3>
 
         <auction-info ng-if="ctrl.selection.selectedItem"
                       ng-model="ctrl.itemsModel"
                       auction-id="ctrl.selection.selectedItem"
                       bidder-name="ctrl.selection.selectedBidder"></auction-info>
 
-        <bidder-info ng-if="ctrl.selection.selectedBidder && !ctrl.selection.selectedItem"
+        <bidder-info ng-if="ctrl.selection.selectedItem"
                      ng-model="ctrl.biddersModel"
+                     ng-items-model="ctrl.itemsModel"
+                     auction-id="ctrl.selection.selectedItem"
                      bidder-name="ctrl.selection.selectedBidder"></bidder-info>
 
 

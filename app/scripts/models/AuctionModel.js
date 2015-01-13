@@ -83,6 +83,7 @@ angular.module('madbid.model')
                  price: item['highest_bid'],
                  winner: item['highest_bidder']
                });
+               localItem.price = item['highest_bid'];
              }
 
              if (!localBidder) {
@@ -121,9 +122,11 @@ angular.module('madbid.model')
              localItem = db.items[item['auction_id']];
            }
            angular.extend(localItem, item);
+           localItem.price = item['auction_data']['last_bid']['highest_bid'];
          }
        }
 
+       console.log(db);
        localStorageService.set('full-cache', db);
      }
    }
