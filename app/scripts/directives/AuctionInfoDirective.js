@@ -102,11 +102,28 @@ angular.module('madbid.directive')
 
        highCharts = container.highcharts();
 
+
        $scope.$watch(function(){
-         return $scope.ngModel[$scope.auctionId];
+         return $scope.auctionId;
+       }, function(newVal, oldVal){
+         if (newVal && newVal !== oldVal){
+
+         }
+       });
+
+       $scope.$watch(function(){
+         return [$scope.auctionId, $scope.ngModel[$scope.auctionId]];
        }, function(newVal, oldVal){
          if(newVal && newVal !== oldVal){
-           var itemPoints = newVal.updatePoints,
+           if (newVal[0] !== oldVal[0]){
+             highCharts.series[0].remove(true);
+             highCharts.addSeries({
+               name: 'Bids',
+               color: 'rgba(119,152,191,0.9)'
+             });
+           }
+
+           var itemPoints = newVal[1].updatePoints,
                item,
                index,
                i,

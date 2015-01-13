@@ -49,10 +49,10 @@
       <file leaf-file-name="AuctionInfoDirective.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/scripts/directives/AuctionInfoDirective.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5887522" vertical-offset="1789" max-vertical-offset="2376">
-              <caret line="118" column="71" selection-start-line="118" selection-start-column="71" selection-end-line="118" selection-end-column="71" />
+            <state vertical-scroll-proportion="0.5254833" vertical-offset="1861" max-vertical-offset="2682">
+              <caret line="120" column="27" selection-start-line="120" selection-start-column="27" selection-end-line="120" selection-end-column="27" />
               <folding>
-                <marker date="1421141394847" expanded="true" signature="835:882" placeholder="..." />
+                <marker date="1421151027690" expanded="true" signature="835:882" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -172,7 +172,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -225,6 +224,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -313,7 +313,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21087314" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21018063" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Grunt" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -415,7 +415,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2052">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1421141394847" expanded="true" signature="835:882" placeholder="..." />
+            <marker date="1421151027690" expanded="true" signature="835:882" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -483,7 +483,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1590">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1421141394847" expanded="true" signature="835:882" placeholder="..." />
+            <marker date="1421151027690" expanded="true" signature="835:882" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -551,7 +551,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="375">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1421141394847" expanded="true" signature="835:882" placeholder="..." />
+            <marker date="1421151027690" expanded="true" signature="835:882" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -619,7 +619,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="405">
           <caret line="17" column="27" selection-start-line="17" selection-start-column="27" selection-end-line="17" selection-end-column="27" />
           <folding>
-            <marker date="1421141394847" expanded="true" signature="835:882" placeholder="..." />
+            <marker date="1421151027690" expanded="true" signature="835:882" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -809,10 +809,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/directives/AuctionInfoDirective.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5887522" vertical-offset="1789" max-vertical-offset="2376">
-          <caret line="118" column="71" selection-start-line="118" selection-start-column="71" selection-end-line="118" selection-end-column="71" />
+        <state vertical-scroll-proportion="0.5254833" vertical-offset="1861" max-vertical-offset="2682">
+          <caret line="120" column="27" selection-start-line="120" selection-start-column="27" selection-end-line="120" selection-end-column="27" />
           <folding>
-            <marker date="1421141394847" expanded="true" signature="835:882" placeholder="..." />
+            <marker date="1421151027690" expanded="true" signature="835:882" placeholder="..." />
           </folding>
         </state>
       </provider>
