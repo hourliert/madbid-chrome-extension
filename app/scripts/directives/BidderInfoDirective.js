@@ -128,6 +128,7 @@ angular.module('madbid.directive')
                                       name: i,
                                       y: bidder.bids[j].updatePoints.length
                                   });
+                                  bidderIndex[i] = data.length - 1;
                                   break;
                               }
                           }
