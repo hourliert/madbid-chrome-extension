@@ -6,7 +6,9 @@ angular.module('madbid.model')
   .service('AuctionModel', ['localStorageService', '$interval', function(localStorageService, $interval){
     var db = {
           items : {},
-          bidders: {}
+          bidders: {},
+          dateMin : null,
+          dateMax : null
         },
         timer,
         reference;
@@ -45,11 +47,8 @@ angular.module('madbid.model')
        for (var i in db.items) delete db.items[i];
        for (var j in db.bidders) delete db.bidders[j];
      },
-     getItems : function(){
-       return db.items;
-     },
-     getBidders : function(){
-       return db.bidders;
+     getModel : function(){
+       return db;
      },
      handleUpdate : function(json){
        var items = json.response.items,

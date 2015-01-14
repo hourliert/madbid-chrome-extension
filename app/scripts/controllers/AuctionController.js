@@ -5,8 +5,9 @@
 var AuctionController = function($scope, $timeout, $interval, NetworkService, AuctionModel){
   var timer;
 
-  this.itemsModel = AuctionModel.getItems();
-  this.biddersModel = AuctionModel.getBidders();
+  this.model = AuctionModel.getModel();
+  this.dateFilter = 0;
+
 
   this.time = new Date();
 
@@ -25,6 +26,11 @@ var AuctionController = function($scope, $timeout, $interval, NetworkService, Au
     AuctionModel.clearCache();
     this.selection.selectedBidder = '';
     this.selection.selectedItem = '';
+  };
+
+  this.changeAuction = function(){
+    this.model.dateMin = null;
+    this.model.dateMax = null;
   };
 
   timer = $interval(angular.bind(this, function(){

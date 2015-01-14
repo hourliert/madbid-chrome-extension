@@ -16,7 +16,7 @@ angular.module('madbid.directive')
 
      },
      link: function($scope, $element, attrs){
-       var itemPoints = $scope.ngModel[$scope.auctionId].updatePoints,
+       var itemPoints = $scope.ngModel.items[$scope.auctionId].updatePoints,
            auctionIndex = {},
            item,
            data = [],
@@ -24,15 +24,32 @@ angular.module('madbid.directive')
            i,
            ii,
            oldAuctionId = $scope.auctionId,
+           oldBidderName = $scope.bidderName,
            highCharts,
            graphOptions = {
              chart: {
                renderTo: 'container-auction-info',
                type: 'line',
-               zoomType: 'xy'
+               zoomType: 'x',
+               events: {
+                 selection: function(e){
+                   if (e.xAxis){
+                      $scope.ngModel.dateMin = e.xAxis[0].min;
+
+                      if (e.xAxis[0].max > highCharts.xAxis[0].dataMax){
+                        $scope.ngModel.dateMax = Number.MAX_VALUE;
+                      } else {
+                        $scope.ngModel.dateMax = e.xAxis[0].max;
+                      }
+                   } else {
+                     $scope.ngModel.dateMin = null;
+                     $scope.ngModel.dateMax = null;
+                   }
+                 }
+               }
              },
              title: {
-               text: 'Bids for ' + $scope.ngModel[$scope.auctionId].title || $scope.auctionId
+               text: 'Bids for ' + $scope.ngModel.items[$scope.auctionId].title || $scope.auctionId
              },
              subtitle: {
                text: 'Since last reset / launch'
@@ -114,6 +131,9 @@ angular.module('madbid.directive')
 
        for (i = 0, ii = itemPoints.length ; i < ii ; i++){
          item = itemPoints[i];
+         if ($scope.bidderName && item.winner !== $scope.bidderName){
+           continue;
+         }
          data.push({
            x: new Date(item.date),
            y: item.price,
@@ -132,32 +152,28 @@ angular.module('madbid.directive')
          animation: false
        }, true);
 
+       $scope.ngModel.dateMin = null;
+       $scope.ngModel.dateMax = null;
 
        $scope.$watch(function(){
-         return $scope.bidderName;
-       }, function(newVal, oldVal){
-         if (newVal && newVal !== oldVal){
-           console.log(newVal);
-
-         }
-       });
-
-       $scope.$watch(function(){
-         return $scope.auctionId + $scope.ngModel[$scope.auctionId].updatePoints.length;
+         return $scope.auctionId + $scope.ngModel.items[$scope.auctionId].updatePoints.length + (($scope.bidderName) ? $scope.bidderName.length : 0);
        }, function(newVal){
          if(newVal){
            var start = +new Date(),
-               itemPoints = $scope.ngModel[$scope.auctionId].updatePoints,
+               itemPoints = $scope.ngModel.items[$scope.auctionId].updatePoints,
                item,
                index,
                i,
                ii;
 
-           if ($scope.auctionId !== oldAuctionId){
+           if ($scope.auctionId !== oldAuctionId || $scope.bidderName !== oldBidderName){
              var data = [];
 
              for (i = 0, ii = itemPoints.length ; i < ii ; i++){
                item = itemPoints[i];
+               if ($scope.bidderName && item.winner !== $scope.bidderName){
+                  continue;
+               }
                data.push({
                  x: new Date(item.date),
                  y: item.price,
@@ -178,13 +194,17 @@ angular.module('madbid.directive')
                shadow: false,
                animation: false
              });
-
+             $scope.ngModel.dateMin = null;
+             $scope.ngModel.dateMax = null;
            } else {
-
              for (i = 0, ii = itemPoints.length ; i < ii ; i++){
                item = itemPoints[i];
                index = +new Date(item.date) + '_' + item.price;
                if (!auctionIndex[index]){
+                 if ($scope.bidderName && item.winner !== $scope.bidderName){
+                   continue;
+                 }
+
                  highCharts.series[0].addPoint({
                    x: new Date(item.date),
                    y: item.price,
@@ -196,10 +216,11 @@ angular.module('madbid.directive')
            }
 
            highCharts.setTitle({
-             text: 'Bids for ' + $scope.ngModel[$scope.auctionId].title || $scope.auctionId
+             text: 'Bids for ' + $scope.ngModel.items[$scope.auctionId].title || $scope.auctionId
            });
 
            oldAuctionId = $scope.auctionId;
+           oldBidderName = $scope.bidderName;
            console.log('bids', (+new Date() - start), 'ms');
          }
        });
