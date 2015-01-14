@@ -83,7 +83,8 @@ angular.module('madbid.directive')
               },
               series: [{
                   name: 'Bids',
-                  data: data
+                  data: data,
+                  color: 'rgba(119,152,191,0.9)'
               }]
           });
 
@@ -99,10 +100,26 @@ angular.module('madbid.directive')
                       j,
                       bidder,
                       highchartPoint,
-                      categorie = [],
+                      categories = [],
+                      graphCategorie = highCharts.xAxis[0].names,
+                      shouldRedrawGraph = false,
                       data = [];
 
-                  if ($scope.auctionId !== oldAuctionId){
+                  for (i in $scope.ngModel){
+                      bidder = $scope.ngModel[i];
+                      for (j in bidder.bids){
+                          if (j === $scope.auctionId){
+                              categories.push(i);
+                              break;
+                          }
+                      }
+                  }
+
+                  if (categories.length !== graphCategorie.length){
+                      shouldRedrawGraph = true;
+                  }
+
+                  if ($scope.auctionId !== oldAuctionId || shouldRedrawGraph){
                       for (i in $scope.ngModel){
                           bidder = $scope.ngModel[i];
                           for (j in bidder.bids){
@@ -119,7 +136,8 @@ angular.module('madbid.directive')
                       highCharts.series[0].remove(true);
                       highCharts.addSeries({
                           name: 'Bids',
-                          data: data
+                          data: data,
+                          color: 'rgba(119,152,191,0.9)'
                       });
                   } else {
                       for (i in $scope.ngModel){
@@ -133,12 +151,12 @@ angular.module('madbid.directive')
                                           name: i,
                                           y: bidder.bids[j].updatePoints.length
                                       }, true);
-                                      categorie.push(i);
                                   }
                                   break;
                               }
                           }
                       }
+                      highCharts.redraw();
                   }
 
 
