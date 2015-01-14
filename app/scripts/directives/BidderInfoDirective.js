@@ -21,35 +21,14 @@ angular.module('madbid.directive')
           var container,
             i,
             j,
-            ii,
             oldAuctionId = $scope.auctionId,
             bidder,
-            categorie = [],
             data = [],
             bidderIndex = {},
-            highCharts;
-
-          for (i in $scope.ngModel){
-             bidder = $scope.ngModel[i];
-             for (j in bidder.bids){
-                if (j === $scope.auctionId){
-                    data.push({
-                        name: i,
-                        y: bidder.bids[j].updatePoints.length
-                    });
-                    bidderIndex[i] = data.length - 1;
-                    break;
-                }
-             }
-          }
-
-
-          container = angular.element('<div id="container-bidders-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');
-          angular.element($element[0]).append(container);
-          container = $($element[0].firstChild);
-
-          container.highcharts({
+            highCharts,
+            graphOptions = {
               chart: {
+                  renderTo: 'container-bidders-info',
                   type: 'column'
               },
               title: {
@@ -81,14 +60,34 @@ angular.module('madbid.directive')
                       borderWidth: 0
                   }
               },
-              series: [{
-                  name: 'Bids',
-                  data: data,
-                  color: 'rgba(119,152,191,0.9)'
-              }]
-          });
+              series: []
+            };
 
-          highCharts = container.highcharts();
+
+          container = angular.element('<div id="container-bidders-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');
+          angular.element($element[0]).append(container);
+          container = $($element[0].firstChild);
+
+          for (i in $scope.ngModel){
+             bidder = $scope.ngModel[i];
+             for (j in bidder.bids){
+                if (j === $scope.auctionId){
+                    data.push({
+                        name: i,
+                        y: bidder.bids[j].updatePoints.length
+                    });
+                    bidderIndex[i] = data.length - 1;
+                    break;
+                }
+             }
+          }
+
+          highCharts = new Highcharts.Chart(graphOptions);
+          highCharts.addSeries({
+              name: 'Bids',
+              data: data,
+              color: 'rgba(119,152,191,0.9)'
+          }, true);
 
 
           $scope.$watch(function(){
@@ -134,12 +133,14 @@ angular.module('madbid.directive')
                           }
                       }
 
-                      highCharts.series[0].remove(true);
+                      highCharts.destroy();
+                      highCharts = new Highcharts.Chart(graphOptions);
+
                       highCharts.addSeries({
                           name: 'Bids',
                           data: data,
                           color: 'rgba(119,152,191,0.9)'
-                      });
+                      }, true);
                   } else {
                       for (i in $scope.ngModel){
                           bidder = $scope.ngModel[i];
@@ -157,7 +158,6 @@ angular.module('madbid.directive')
                               }
                           }
                       }
-                      highCharts.redraw();
                   }
 
 

@@ -24,7 +24,93 @@ angular.module('madbid.directive')
            i,
            ii,
            oldAuctionId = $scope.auctionId,
-           highCharts;
+           highCharts,
+           graphOptions = {
+             chart: {
+               renderTo: 'container-auction-info',
+               type: 'line',
+               zoomType: 'xy'
+             },
+             title: {
+               text: 'Bids for ' + $scope.ngModel[$scope.auctionId].title || $scope.auctionId
+             },
+             subtitle: {
+               text: 'Since last reset / launch'
+             },
+             xAxis: {
+               title: {
+                 enabled: true,
+                 text: 'Time'
+               },
+               type: 'datetime',
+               startOnTick: true,
+               endOnTick: true,
+               showLastLabel: true
+             },
+             yAxis: {
+               title: {
+                 text: 'Price (euros)'
+               }
+             },
+             legend: {
+               layout: 'vertical',
+               align: 'left',
+               verticalAlign: 'top',
+               x: 100,
+               y: 70,
+               floating: true,
+               backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+               borderWidth: 1
+             },
+             plotOptions: {
+               line: {
+                 animation: false,
+                 marker: {
+                   radius: 3,
+                   states: {
+                     hover: {
+                       enabled: true,
+                       lineColor: 'rgb(100,100,100)'
+                     }
+                   }
+                 },
+                 states: {
+                   hover: {
+                     marker: {
+                       enabled: false
+                     }
+                   }
+                 },
+                 tooltip: {
+                   animation: false,
+                   headerFormat: '<b>{series.name}</b><br>',
+                   pointFormat: 'Bidder <strong>{point.name}</strong><br/>{point.x}<br/><strong>{point.y}</strong> euros'
+                 },
+                 dataGrouping: {
+                   approximation: 'average',
+                   enabled: 'true',
+                   groupPixelWidth: 2,
+                   dateTimeLabelFormats: {
+                     second: '%H:%M:%S',
+                     minute: '%H:%M',
+                     hour: '%H:%M',
+                     day: '%e. %b',
+                     week: '%e. %b',
+                     month: '%b \'%y',
+                     year: '%Y'
+                   }
+                 }
+               },
+               serie: {
+                 animation: false
+               }
+             },
+             series: []
+           };
+
+       container = angular.element('<div id="container-auction-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');
+       angular.element($element[0]).append(container);
+       container = $($element[0].firstChild);
 
        for (i = 0, ii = itemPoints.length ; i < ii ; i++){
          item = itemPoints[i];
@@ -36,100 +122,15 @@ angular.module('madbid.directive')
          auctionIndex[+new Date(item.date) + '_' + item.price] = i;
        }
 
-       container = angular.element('<div id="container-auction-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');
-       angular.element($element[0]).append(container);
-       container = $($element[0].firstChild);
-
-       container.highcharts({
-         chart: {
-           type: 'line',
-           zoomType: 'xy'
-         },
-         title: {
-           text: 'Bids for ' + $scope.ngModel[$scope.auctionId].title || $scope.auctionId
-         },
-         subtitle: {
-           text: 'Since last reset / launch'
-         },
-         xAxis: {
-           title: {
-             enabled: true,
-             text: 'Time'
-           },
-           type: 'datetime',
-           startOnTick: true,
-           endOnTick: true,
-           showLastLabel: true
-         },
-         yAxis: {
-           title: {
-             text: 'Price (euros)'
-            }
-         },
-         legend: {
-           layout: 'vertical',
-           align: 'left',
-           verticalAlign: 'top',
-           x: 100,
-           y: 70,
-           floating: true,
-           backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
-           borderWidth: 1
-         },
-         plotOptions: {
-           line: {
-             animation: false,
-             marker: {
-               radius: 3,
-               states: {
-                 hover: {
-                   enabled: true,
-                   lineColor: 'rgb(100,100,100)'
-                 }
-               }
-             },
-             states: {
-               hover: {
-                 marker: {
-                   enabled: false
-                 }
-               }
-             },
-             tooltip: {
-               animation: false,
-               headerFormat: '<b>{series.name}</b><br>',
-               pointFormat: 'Bidder <strong>{point.name}</strong><br/>{point.x}<br/><strong>{point.y}</strong> euros'
-             },
-             dataGrouping: {
-               approximation: 'average',
-               enabled: 'true',
-               groupPixelWidth: 2,
-               dateTimeLabelFormats: {
-                 second: '%H:%M:%S',
-                 minute: '%H:%M',
-                 hour: '%H:%M',
-                 day: '%e. %b',
-                 week: '%e. %b',
-                 month: '%b \'%y',
-                 year: '%Y'
-               }
-             }
-           },
-           serie: {
-             animation: false
-           }
-         },
-         series: [{
-           name: 'Bids',
-           color: 'rgba(119,152,191,0.9)',
-           data: data,
-           turboThreshold: 0,
-           shadow: false,
-           animation: false
-         }]
-       });
-
-       highCharts = container.highcharts();
+       highCharts = new Highcharts.Chart(graphOptions);
+       highCharts.addSeries({
+         name: 'Bids',
+         color: 'rgba(119,152,191,0.9)',
+         data: data,
+         turboThreshold: 0,
+         shadow: false,
+         animation: false
+       }, true);
 
 
        $scope.$watch(function(){
@@ -165,7 +166,10 @@ angular.module('madbid.directive')
                auctionIndex[+new Date(item.date) + '_' + item.price] = i;
              }
 
-             highCharts.series[0].remove(true);
+
+             highCharts.destroy();
+             highCharts = new Highcharts.Chart(graphOptions);
+
              highCharts.addSeries({
                name: 'Bids',
                color: 'rgba(119,152,191,0.9)',
