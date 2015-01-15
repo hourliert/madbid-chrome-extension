@@ -5,7 +5,7 @@
 var AuctionController = function($scope, $timeout, $interval, NetworkService, AuctionModel){
   var timer;
 
-  this.model = AuctionModel.getModel();
+  this.model = AuctionModel.getAuctionHouse();
   this.dateFilter = 0;
 
 

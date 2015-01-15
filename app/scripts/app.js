@@ -25,5 +25,5 @@ app.config(['localStorageServiceProvider', function(localStorageServiceProvider)
 
 app.run(['localStorageService', 'AuctionModel', function(localStorageService, AuctionModel){
    var db = localStorageService.get('full-cache');
-  AuctionModel.setBootData(db);
+  AuctionModel.restoreData(db);
 }]);

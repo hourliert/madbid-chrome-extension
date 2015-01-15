@@ -4,6 +4,8 @@
 
 angular.module('madbid.model')
   .service('AuctionModel', ['localStorageService', '$interval', function(localStorageService, $interval){
+     var ah = new AuctionHouse();
+
     var db = {
           items : {},
           bidders: {},
@@ -12,6 +14,39 @@ angular.module('madbid.model')
         },
         timer,
         reference;
+
+
+      function SingletonBidder(ah, name){
+        var bidder = ah.getBidder(name);
+
+        if (!bidder){
+          bidder = new Bidder(ah, name);
+          ah.addBidder(bidder);
+        }
+
+        return bidder;
+      }
+      function SingletonItem(ah, id){
+        var item = ah.getItem(id);
+
+        if (!item){
+          item = new Item(ah, id);
+          ah.addItem(item);
+        }
+
+        return item;
+      }
+      function SingletonAuction(ah, id){
+        var auction = ah.getAuction(id);
+
+        if (!auction){
+          auction = new Auction(ah, id);
+          ah.addAuction(auction);
+        }
+
+        return auction;
+      }
+
 
       timer = $interval(function(){
         var i,
@@ -36,26 +71,95 @@ angular.module('madbid.model')
 
 
    return {
-     setBootData: function(data){
-       if (data && data.items && data.bidders){
-         angular.extend(db.items, data.items);
-         angular.extend(db.bidders, data.bidders);
+     saveData: function(){
+       localStorageService.set('full-cache', ah.toJson(true));
+     },
+     restoreData: function(data){
+        var auctions = data.auctions,
+            auction,
+            i,
+            ii,
+            b,
+            bb,
+            bidders,
+            bidder,
+            bids,
+            bid,
+            item,
+            localItem,
+            localAuction,
+            localBidder,
+            localBid,
+            itemsForAh = {},
+            auctionsForAh = {},
+            biddersForAh = {};
+
+       for (i = 0, ii = auctions.length; i < ii; i++){
+           auction = auctions[i];
+           item = auction.item;
+           bids = auction.bids,
+           bidders = auction.bidders;
+
+           localItem = SingletonItem(ah, item.id);
+           localItem.updateStat(item);
+           itemsForAh[localItem.getId()] = localItem;
+
+           localAuction = SingletonAuction(ah, item.id);
+           localAuction.updateStat(auction);
+           localAuction.setItem(localItem);
+           auctionsForAh[localAuction.getId()] = localAuction;
+
+           for (b = 0, bb = bidders.length; b < bb; b++){
+               bidder = bidders[b];
+               localBidder = SingletonBidder(ah, bidder.bidderName);
+               localBidder.addAuction(localAuction);
+               biddersForAh[localBidder.getId()] = localBidder;
+
+               localAuction.addBidder(localBidder);
+           }
+
+           for (b = 0, bb = bids.length; b < bb; b++){
+               bid = bids[b];
+               localBidder = SingletonBidder(ah, bid.bidderName);
+               biddersForAh[localBidder.getId()] = localBidder;
+               localBid = new Bid(localAuction);
+
+               localBid.updateStat(bid);
+               localBid.setBidder(localBidder);
+
+               localBidder.addAuction(localAuction);
+               localBidder.addBid(localBid);
+
+               localAuction.addBidder(localBidder);
+               localAuction.addBid(localBid);
+           }
+
+
+           console.log(auction);
        }
+
+        ah = new AuctionHouse(biddersForAh, itemsForAh, auctionsForAh);
+        console.log(ah);
      },
      clearCache: function(){
        localStorageService.clearAll();
-       for (var i in db.items) delete db.items[i];
-       for (var j in db.bidders) delete db.bidders[j];
+
+       delete ah;
+       ah = new AuctionHouse();
      },
-     getModel : function(){
-       return db;
+     getAuctionHouse : function(){
+       return ah;
      },
      handleUpdate : function(json){
        var items = json.response.items,
            item,
+           itemId,
            localItem,
+           highestBid,
+           localAuction,
            localBidder,
-           biddersBid,
+           bidderName,
+           localBid,
            i,
            ii;
 
@@ -64,69 +168,71 @@ angular.module('madbid.model')
        if (json.cmd === '/update') {
          for (i = 0, ii = items.length; i < ii; i++) {
            item = items[i];
-           localItem = db.items[item['auction_id']];
-           localBidder = db.bidders[item['highest_bidder']];
 
-           if (item['highest_bid'] !== 0) {
-             if (!localItem) {
-               db.items[item['auction_id']] = {
-                 updatePoints: []
-               };
-               localItem = db.items[item['auction_id']];
-             }
-
-             if (localItem.updatePoints.length === 0 || localItem.updatePoints[localItem.updatePoints.length - 1].price !== item['highest_bid']) {
-               localItem.updatePoints.push({
-                 date: item['date_bid'],
-                 endDate: item['date_timeout'],
-                 price: item['highest_bid'],
-                 winner: item['highest_bidder']
-               });
-               localItem.price = item['highest_bid'];
-             }
-
-             if (!localBidder) {
-               db.bidders[item['highest_bidder']] = {
-                 bids: {}
-               }
-               localBidder = db.bidders[item['highest_bidder']];
-             }
-             biddersBid = localBidder.bids[item['auction_id']];
-
-             if (!biddersBid) {
-               localBidder.bids[item['auction_id']] = {
-                 updatePoints: []
-               };
-               biddersBid = localBidder.bids[item['auction_id']];
-             }
-
-             if (biddersBid.updatePoints.length === 0 || biddersBid.updatePoints[biddersBid.updatePoints.length - 1].price !== item['highest_bid']) {
-               biddersBid.updatePoints.push({
-                 date: item['date_bid'],
-                 endDate: item['date_timeout'],
-                 price: item['highest_bid']
-               });
-             }
+           try{
+             itemId = item['auction_id'];
+             highestBid = item['highest_bid'];
+             bidderName = item['highest_bidder'];
+             if (!itemId || !bidderName || !highestBid) throw "Incorrect Item";
+           } catch(e){
+             console.log('AuctionModel: Incorrect item');
+             continue;
            }
+
+           localItem = SingletonItem(ah, itemId);
+           localAuction = SingletonAuction(ah, itemId);
+           localBidder = SingletonBidder(ah, bidderName);
+           localBid = new Bid(localAuction);
+
+           localItem.setAuction(localAuction);
+
+           localBid.updateStat(item);
+           localBid.setBidder(localBidder);
+
+           localAuction.updateStat(item);
+           localAuction.setItem(localItem);
+           localAuction.addBidder(localBidder);
+           localAuction.addBid(localBid);
+
+           localBidder.addBid(localBid);
+           localBidder.addAuction(localAuction);
          }
        } else if (json.cmd === '/load/current'){
          for (i = 0, ii = items.length; i < ii; i++) {
            item = items[i];
-           localItem = db.items[item['auction_id']];
 
-           if (!localItem) {
-              db.items[item['auction_id']] = {
-                updatePoints: []
-              };
-             localItem = db.items[item['auction_id']];
+           try{
+             itemId = item['auction_id'];
+             bidderName = item['auction_data']['last_bid']['highest_bidder'];
+             if (!itemId || !bidderName) throw "Incorrect Item";
+           } catch(e){
+             console.log('AuctionModel: Incorrect item');
+             continue;
            }
-           angular.extend(localItem, item);
-           localItem.price = item['auction_data']['last_bid']['highest_bid'];
+
+           localItem = SingletonItem(ah, itemId);
+           localAuction = SingletonAuction(ah, itemId);
+           localBidder = SingletonBidder(ah, bidderName);
+           localBid = new Bid(localAuction);
+
+           localItem.updateStat(item);
+           localItem.setAuction(localAuction);
+
+           localBid.updateStat(item);
+           localBid.setBidder(localBidder);
+
+           localAuction.updateStat(item);
+           localAuction.setItem(localItem);
+           localAuction.addBidder(localBidder);
+           localAuction.addBid(localBid);
+
+           localBidder.addBid(localBid);
+           localBidder.addAuction(localAuction);
          }
        }
 
-       console.log(db);
-       localStorageService.set('full-cache', db);
+       console.log(ah);
+       this.saveData(ah);
      }
    }
   }]);
