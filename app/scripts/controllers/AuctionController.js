@@ -11,6 +11,8 @@ var Madbid;
             this.$interval = $interval;
             this.networkService = networkService;
             this.auctionModel = auctionModel;
+            this.selection = {};
+            this.model = auctionModel.getModel();
             networkService.addListener(function (res) {
                 $scope.$apply(function () {
                     auctionModel.handleUpdate(res);

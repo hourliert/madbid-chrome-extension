@@ -17,6 +17,14 @@ var Madbid;
         Bidder.prototype.addBid = function (bid) {
             this.bids[bid.getId()] = bid;
         };
+        Bidder.prototype.isBiddingOn = function (auction) {
+            if (this.auctions[auction.getId()]) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        };
         Bidder.prototype.addAuction = function (auction) {
             this.auctions[auction.getId()] = auction;
         };

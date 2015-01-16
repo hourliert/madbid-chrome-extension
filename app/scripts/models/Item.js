@@ -12,6 +12,14 @@ var Madbid;
         Item.prototype.getId = function () {
             return this.id;
         };
+        Item.prototype.isValid = function () {
+            if (this.name) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        };
         Item.prototype.setAuction = function (auction) {
             this.auction = auction;
         };

@@ -33,6 +33,14 @@ module Madbid{
            this.bids[bid.getId()] = bid;
        }
 
+       public isBiddingOn(auction: Auction): boolean{
+           if (this.auctions[auction.getId()]){
+               return true;
+           } else {
+               return false;
+           }
+       }
+
        public addAuction(auction: Auction){
            this.auctions[auction.getId()] = auction;
        }

@@ -10,4 +10,5 @@
 /// <reference path='models/AuctionModel.ts' />
 /// <reference path='controllers/AuctionController.ts' />
 /// <reference path='services/NetworkService.ts' />
+/// <reference path='filters/BiddingBidderFilter.ts' />
 //# sourceMappingURL=_all.js.map

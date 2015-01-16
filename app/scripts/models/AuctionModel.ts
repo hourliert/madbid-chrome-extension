@@ -8,7 +8,7 @@ module Madbid{
     export class AuctionModel{
         public static $inject = ['storage', '$interval'];
 
-        public ah: AuctionHouse;
+        private ah: AuctionHouse;
         public timeReference: Date;
 
         constructor(
@@ -50,6 +50,9 @@ module Madbid{
             return auction;
         }
 
+        public getModel(){
+            return this.ah;
+        }
         public saveData(){
             this.storage.set('full-cache', this.ah.toJson());
         }

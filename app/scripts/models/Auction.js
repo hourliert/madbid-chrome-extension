@@ -22,6 +22,9 @@ var Madbid;
         Auction.prototype.updateEndTime = function (reference) {
             this.remainingTime = (+reference - +this.endTime) / 1000;
         };
+        Auction.prototype.isValid = function () {
+            return this.item.isValid(); //maybe we should test if bids is not empty too ?
+        };
         Auction.prototype.addBid = function (bid) {
             this.bids[bid.getId()] = bid;
             this.lastBid = bid;

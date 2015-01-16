@@ -40,6 +40,9 @@ var Madbid;
             }
             return auction;
         };
+        AuctionModel.prototype.getModel = function () {
+            return this.ah;
+        };
         AuctionModel.prototype.saveData = function () {
             this.storage.set('full-cache', this.ah.toJson());
         };

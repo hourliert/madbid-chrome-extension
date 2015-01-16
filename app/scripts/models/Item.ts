@@ -22,7 +22,7 @@ module Madbid{
         private id: number;
         private auction: Auction;
 
-        private name: string;
+        public name: string;
         private creditCost: number;
         private shippingCost: number;
         private buyNowPrice: number;
@@ -36,11 +36,16 @@ module Madbid{
         public getId(): number{
             return this.id;
         }
-
+        public isValid(): boolean {
+            if (this.name) {
+                return true;
+            } else {
+                return false;
+            }
+        }
         public setAuction(auction: Auction){
             this.auction = auction;
         }
-
         public updateStat(param: ISerializedItem){
             if (param.name) this.name = param.name;
             if (param.creditCost) this.creditCost = param.creditCost;

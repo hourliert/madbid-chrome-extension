@@ -10,9 +10,9 @@ module Madbid{
     }
     export class AuctionHouse implements ISerializable{
         constructor(
-            private bidders?: IBidderMap,
-            private items?: IItemMap,
-            private auctions?: IAuctionMap
+            public bidders?: IBidderMap,
+            public items?: IItemMap,
+            public auctions?: IAuctionMap
         ){
             this.bidders = bidders || {};
             this.items = items || {};

@@ -5,10 +5,18 @@
 /// <reference path='../_all.ts' />
 
 module Madbid{
+    export interface IUserSelection{
+        auction?: Auction;
+        bidder?: Bidder;
+    }
+
+
     export class AuctionController{
         public static $inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
 
+        public model: AuctionHouse;
         public time: Date;
+        public selection: IUserSelection;
 
         constructor(
             private $scope: ng.IScope,
@@ -17,6 +25,9 @@ module Madbid{
             private networkService: NetworkService,
             private auctionModel: AuctionModel
         ){
+            this.selection = {};
+            this.model = auctionModel.getModel();
+
             networkService.addListener(function(res){
                 $scope.$apply(function(){
                     auctionModel.handleUpdate(res);

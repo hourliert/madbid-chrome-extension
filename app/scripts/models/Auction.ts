@@ -20,7 +20,7 @@ module Madbid{
     export class Auction implements ISerializable{
         private ah: AuctionHouse;
         private id: number;
-        private item: Item;
+        public item: Item;
         private bidders: IBidderMap;
         private bids: IBidMap;
         private lastBid: Bid;
@@ -46,6 +46,10 @@ module Madbid{
 
         public updateEndTime(reference: Date){
             this.remainingTime = (+reference - +this.endTime) / 1000;
+        }
+
+        public isValid(): boolean{
+            return this.item.isValid(); //maybe we should test if bids is not empty too ?
         }
 
         public addBid(bid: Bid){
