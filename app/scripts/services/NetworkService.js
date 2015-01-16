@@ -1,37 +1,38 @@
 /**
  * Created by thomashourlier on 12/01/15.
  */
-
-var deferred;
-
-angular.module('madbid.service')
-.factory('NetworkService', ['$q', function($q){
-    var listeners = [],
-        listener = function(content){
-          var json,
-              i,
-              ii;
-
-          try {
-            json = JSON.parse(content);
-
-            for (i = 0, ii = listeners.length ; i < ii ; i++){
-              listeners[i](json || {});
+/// <reference path='../_all.ts' />
+var Madbid;
+(function (Madbid) {
+    var NetworkService = (function () {
+        function NetworkService($q) {
+            this.$q = $q;
+            this.listeners = [];
+            var This = this;
+            chrome.devtools.network.onRequestFinished.addListener(function (res) {
+                res.getContent(function (data) {
+                    This.receiveData(data);
+                });
+            });
+        }
+        NetworkService.prototype.receiveData = function (data) {
+            var json, i, ii;
+            try {
+                json = JSON.parse(data);
+                for (i = 0, ii = this.listeners.length; i < ii; i++) {
+                    this.listeners[i](json || {});
+                }
             }
-          } catch(e){
-          }
+            catch (e) {
+            }
         };
-
-    chrome.devtools.network.onRequestFinished.addListener(
-      function(res){
-        res.getContent(listener);
-      }
-    );
-
-    return {
-      addListener : function(listener){
-        listeners.push(listener);
-      }
-      //no public services ?
-    };
-  }]);
+        NetworkService.prototype.addListener = function (f) {
+            this.listeners.push(f);
+        };
+        NetworkService.$inject = ['$q'];
+        return NetworkService;
+    })();
+    Madbid.NetworkService = NetworkService;
+    angular.module('madbid.service').service('NetworkService', NetworkService);
+})(Madbid || (Madbid = {}));
+//# sourceMappingURL=NetworkService.js.map
