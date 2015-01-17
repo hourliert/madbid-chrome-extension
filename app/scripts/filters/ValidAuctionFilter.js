@@ -10,7 +10,7 @@ var Madbid;
         var AuctionWithName = (function () {
             function AuctionWithName() {
             }
-            AuctionWithName.filter = function (input) {
+            AuctionWithName.prototype.filter = function (input) {
                 var res = {}, i, auction;
                 for (i in input) {
                     auction = input[i];
