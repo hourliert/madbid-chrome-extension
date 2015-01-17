@@ -10,7 +10,7 @@ var Madbid;
         var AuctionWithName = (function () {
             function AuctionWithName() {
             }
-            AuctionWithName.prototype.filter = function (input) {
+            AuctionWithName.filter = function (input) {
                 var res = {}, i, auction;
                 for (i in input) {
                     auction = input[i];
@@ -23,7 +23,7 @@ var Madbid;
             return AuctionWithName;
         })();
         filters.AuctionWithName = AuctionWithName;
-        Madbid.registerFilter('auctionWithName', function () { return (new AuctionWithName().filter); });
+        Madbid.registerFilter('validAuction', function () { return (new AuctionWithName().filter); });
     })(filters = Madbid.filters || (Madbid.filters = {}));
 })(Madbid || (Madbid = {}));
-//# sourceMappingURL=AuctionWithNameFilter.js.map
+//# sourceMappingURL=ValidAuctionFilter.js.map

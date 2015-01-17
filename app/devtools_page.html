@@ -9,7 +9,7 @@
         <button type="button" ng-click="ctrl.resetCache()">Reset Cache</button>
 
         <label>Select an auction :
-          <select ng-model="ctrl.selection.auction" ng-change="ctrl.changingAuction()" ng-options="val as (val.item.name || key) for (key,val) in ctrl.model.auctions | auctionWithName">
+          <select ng-model="ctrl.selection.auction" ng-change="ctrl.changingAuction()" ng-options="val as (val.item.name || key) for (key,val) in ctrl.model.auctions | validAuction">
             <option value="">--Empty--</option>
           </select>
         </label>
@@ -23,8 +23,8 @@
         <h2>{{ctrl.time | date:'H:mm:ss'}}</h2>
 
 
-        <!--<h3 ng-if="ctrl.selection.auction">{{ctrl.model.items[ctrl.selection.selectedItem].remaining}} seconds remain</h3>
-        <h3 ng-if="ctrl.selection.auction">{{ctrl.model.items[ctrl.selection.selectedItem].price}} euros</h3>-->
+        <h3 ng-if="ctrl.selection.auction">{{ctrl.selection.auction.remainingTime}} seconds remain</h3>
+        <h3 ng-if="ctrl.selection.auction">{{ctrl.selection.auction.currentPrice}} euros</h3>
 
         <auction-info ng-if="ctrl.selection.auction"
                       ng-model="ctrl.model"
@@ -52,7 +52,7 @@
         <script src="scripts/services/NetworkService.js"></script>
         <script src="scripts/directives/AuctionInfoDirective.js"></script>
         <script src="scripts/directives/BidderInfoDirective.js"></script>
-        <script src="scripts/filters/AuctionWithNameFilter.js"></script>
+        <script src="scripts/filters/ValidAuctionFilter.js"></script>
         <script src="scripts/filters/BiddingBidderFilter.js"></script>
 
         <script src="scripts/models/Auction.js"></script>

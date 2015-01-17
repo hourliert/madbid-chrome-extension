@@ -29,7 +29,10 @@ module Madbid{
         private lastBidder: Bidder;
 
         private endTime: Date;
-        private remainingTime: number;
+        public remainingTime: number;
+        public currentPrice: number;
+        public closed: boolean;
+
 
         constructor(ah: AuctionHouse, item: Item){
             this.ah = ah;
@@ -37,19 +40,24 @@ module Madbid{
             this.item = item;
             this.bidders = {};
             this.bids = {};
+            this.closed = false;
         }
 
         public updateStat(param: ISerializedAuction){
             if (param.endTime) this.endTime = new Date(param.endTime);
+            if (+new Date() - +this.endTime > 0) this.closed = true;
         }
         public getId(): number{
             return this.id;
         }
         public updateEndTime(reference: Date){
-            this.remainingTime = (+reference - +this.endTime) / 1000;
+            this.closed = false;
+            this.remainingTime = (+this.endTime - +reference) / 1000;
+
+            if (this.remainingTime < 0) this.closed = true;
         }
         public isValid(): boolean{
-            return this.item.isValid() && this.hasBid();
+            return this.item.isValid() && this.hasBid() && !this.closed;
         }
         public hasBid(): boolean{
             return Object.keys(this.bids).length > 0;
@@ -75,6 +83,7 @@ module Madbid{
         public addBid(bid: Bid){
             this.bids[bid.getId()] = bid;
             this.lastBid = bid;
+            this.currentPrice = bid.value;
         }
         public addBidder(bidder: Bidder){
             this.bidders[bidder.getId()] = bidder;

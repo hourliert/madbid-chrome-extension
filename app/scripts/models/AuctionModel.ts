@@ -134,8 +134,7 @@ module Madbid.models {
             //console.log(this.ah);
         }
         public clearCache(){
-           this.storage.clearAll();
-            delete this.ah;
+            this.storage.clearAll();
             this.ah = new AuctionHouse();
         }
         public handleUpdate(json: IMadbidResponse){

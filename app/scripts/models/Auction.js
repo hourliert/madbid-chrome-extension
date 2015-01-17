@@ -12,19 +12,25 @@ var Madbid;
             this.item = item;
             this.bidders = {};
             this.bids = {};
+            this.closed = false;
         }
         Auction.prototype.updateStat = function (param) {
             if (param.endTime)
                 this.endTime = new Date(param.endTime);
+            if (+new Date() - +this.endTime > 0)
+                this.closed = true;
         };
         Auction.prototype.getId = function () {
             return this.id;
         };
         Auction.prototype.updateEndTime = function (reference) {
-            this.remainingTime = (+reference - +this.endTime) / 1000;
+            this.closed = false;
+            this.remainingTime = (+this.endTime - +reference) / 1000;
+            if (this.remainingTime < 0)
+                this.closed = true;
         };
         Auction.prototype.isValid = function () {
-            return this.item.isValid() && this.hasBid();
+            return this.item.isValid() && this.hasBid() && !this.closed;
         };
         Auction.prototype.hasBid = function () {
             return Object.keys(this.bids).length > 0;
@@ -47,6 +53,7 @@ var Madbid;
         Auction.prototype.addBid = function (bid) {
             this.bids[bid.getId()] = bid;
             this.lastBid = bid;
+            this.currentPrice = bid.value;
         };
         Auction.prototype.addBidder = function (bidder) {
             this.bidders[bidder.getId()] = bidder;

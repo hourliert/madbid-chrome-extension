@@ -87,7 +87,6 @@ var Madbid;
             };
             AuctionModel.prototype.clearCache = function () {
                 this.storage.clearAll();
-                delete this.ah;
                 this.ah = new Madbid.AuctionHouse();
             };
             AuctionModel.prototype.handleUpdate = function (json) {

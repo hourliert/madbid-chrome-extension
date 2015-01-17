@@ -8,7 +8,7 @@
 
 module Madbid.filters {
     export class AuctionWithName{
-        public filter(input: IAuctionMap){
+        public static filter(input: IAuctionMap){
             var res: IAuctionMap = {},
                 i: any,
                 auction: Auction;
@@ -23,5 +23,5 @@ module Madbid.filters {
         }
     }
 
-    Madbid.registerFilter('auctionWithName', () => (new AuctionWithName().filter));
+    Madbid.registerFilter('validAuction', () => (new AuctionWithName().filter));
 }

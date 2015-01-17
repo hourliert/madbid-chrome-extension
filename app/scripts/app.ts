@@ -19,7 +19,7 @@ angular.module('madbid', angularModules.concat([
     'angularLocalStorage'
 ]));
 
-module Madbid{
+module Madbid {
     export module controllers {}
     export module directives {}
     export module filters {}
