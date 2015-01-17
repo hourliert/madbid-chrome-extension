@@ -11,29 +11,31 @@ module Madbid{
 
     export interface ISerializedBid{
         value?: number;
-        date?: Date;
+        date?: string;
         bidderName?: string;
         delta?: number;
     }
 
     export class Bid implements ISerializable{
-        private auction: Auction;
-        private bidder: Bidder;
+        public auction: Auction;
+        public bidder: Bidder;
         private id: string;
 
-        private value: number;
-        private date: Date;
+        public value: number;
+        public date: Date;
         private delta: number;
 
         constructor(auction: Auction, bidder: Bidder){
             this.auction = auction;
             this.bidder = bidder;
-            this.id = this.auction.getId() + '_' + this.bidder.getId();
+            this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
         }
 
         public updateStat(param: ISerializedBid){
             if (param.value) this.value = param.value;
-            if (param.date) this.date = param.date;
+            if (param.date) this.date = new Date(param.date);
+
+            this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
         }
 
         public setBidder(bidder: Bidder){
@@ -48,7 +50,7 @@ module Madbid{
             var obj: ISerializedBid = {
                 bidderName: this.bidder.getId(),
                 value: this.value,
-                date: this.date,
+                date: this.date.toISOString(),
                 delta: this.delta
             };
 

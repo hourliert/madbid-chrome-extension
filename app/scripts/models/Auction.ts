@@ -14,15 +14,15 @@ module Madbid{
         bids?: Array<ISerializedBid>;
         bidders?: Array<ISerializedBidder>;
         item?: ISerializedItem;
-        endTime?: Date;
+        endTime?: string;
     }
 
     export class Auction implements ISerializable{
         private ah: AuctionHouse;
         private id: number;
         public item: Item;
-        private bidders: IBidderMap;
-        private bids: IBidMap;
+        public bidders: IBidderMap;
+        public bids: IBidMap;
         private lastBid: Bid;
         private lastBidder: Bidder;
 
@@ -38,7 +38,7 @@ module Madbid{
         }
 
         public updateStat(param: ISerializedAuction){
-            if (param.endTime) this.endTime = param.endTime;
+            if (param.endTime) this.endTime = new Date(param.endTime);
         }
         public getId(): number{
             return this.id;
@@ -49,7 +49,14 @@ module Madbid{
         }
 
         public isValid(): boolean{
-            return this.item.isValid(); //maybe we should test if bids is not empty too ?
+            return this.item.isValid() && this.hasBid();
+        }
+
+        public hasBid(): boolean{
+            return Object.keys(this.bids).length > 0;
+        }
+        public getNumberBids(): number{
+            return Object.keys(this.bids).length;
         }
 
         public addBid(bid: Bid){
@@ -81,7 +88,7 @@ module Madbid{
                 bids: bids,
                 bidders: bidders,
                 item: item,
-                endTime: this.endTime
+                endTime: this.endTime.toISOString()
             };
 
             return obj;

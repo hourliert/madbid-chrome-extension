@@ -8,13 +8,14 @@ var Madbid;
         function Bid(auction, bidder) {
             this.auction = auction;
             this.bidder = bidder;
-            this.id = this.auction.getId() + '_' + this.bidder.getId();
+            this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
         }
         Bid.prototype.updateStat = function (param) {
             if (param.value)
                 this.value = param.value;
             if (param.date)
-                this.date = param.date;
+                this.date = new Date(param.date);
+            this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
         };
         Bid.prototype.setBidder = function (bidder) {
             this.bidder = bidder;
@@ -26,7 +27,7 @@ var Madbid;
             var obj = {
                 bidderName: this.bidder.getId(),
                 value: this.value,
-                date: this.date,
+                date: this.date.toISOString(),
                 delta: this.delta
             };
             return obj;

@@ -44,8 +44,7 @@ module Madbid{
         }
     }
 
-    angular.module('madbid.controller')
-        .controller('AuctionController', AuctionController);
+    angular.module('madbid.controller').controller('AuctionController', AuctionController);
 }
 
 /*var AuctionController = function($scope, $timeout, $interval, NetworkService, AuctionModel){

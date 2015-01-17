@@ -80,7 +80,7 @@ var Madbid;
                     localAuction.addBid(localBid);
                 }
             }
-            console.log(this.ah);
+            //console.log(this.ah);
         };
         AuctionModel.prototype.clearCache = function () {
             this.storage.clearAll();
@@ -95,14 +95,14 @@ var Madbid;
                 for (i = 0, ii = response.items.length; i < ii; i++) {
                     auction = response.items[i];
                     try {
-                        if (!auction.auction_id || !auction.highest_bid || !auction.highest_bidder)
+                        if (!auction.auction_id || !auction.highest_bid || !auction.highest_bidder || !auction.date_bid)
                             throw 'Incorrect Auction';
                         bidParam = {
                             value: auction.highest_bid,
-                            date: new Date(auction.date_bid)
+                            date: auction.date_bid
                         };
                         auctionParam = {
-                            endTime: new Date(auction.date_timeout)
+                            endTime: auction.date_timeout
                         };
                     }
                     catch (e) {
@@ -138,10 +138,10 @@ var Madbid;
                         };
                         bidParam = {
                             value: item.auction_data.last_bid.highest_bid,
-                            date: new Date(item.auction_data.last_bid.date_bid)
+                            date: item.auction_data.last_bid.date_bid
                         };
                         auctionParam = {
-                            endTime: new Date(item.auction_data.last_bid.date_timeout)
+                            endTime: item.auction_data.last_bid.date_timeout
                         };
                     }
                     catch (e) {
@@ -153,15 +153,15 @@ var Madbid;
                     localBid = new Madbid.Bid(localAuction, localBidder);
                     localItem.updateStat(itemParam);
                     localItem.setAuction(localAuction);
-                    localBid.updateStat(item);
-                    localAuction.updateStat(item);
+                    localBid.updateStat(bidParam);
+                    localAuction.updateStat(auctionParam);
                     localAuction.addBidder(localBidder);
                     localAuction.addBid(localBid);
                     localBidder.addBid(localBid);
                     localBidder.addAuction(localAuction);
                 }
             }
-            console.log(this.ah);
+            //console.log(this.ah);
             this.saveData();
         };
         AuctionModel.$inject = ['storage', '$interval'];

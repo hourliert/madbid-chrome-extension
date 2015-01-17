@@ -14,7 +14,7 @@ var Madbid;
         }
         Auction.prototype.updateStat = function (param) {
             if (param.endTime)
-                this.endTime = param.endTime;
+                this.endTime = new Date(param.endTime);
         };
         Auction.prototype.getId = function () {
             return this.id;
@@ -23,7 +23,13 @@ var Madbid;
             this.remainingTime = (+reference - +this.endTime) / 1000;
         };
         Auction.prototype.isValid = function () {
-            return this.item.isValid(); //maybe we should test if bids is not empty too ?
+            return this.item.isValid() && this.hasBid();
+        };
+        Auction.prototype.hasBid = function () {
+            return Object.keys(this.bids).length > 0;
+        };
+        Auction.prototype.getNumberBids = function () {
+            return Object.keys(this.bids).length;
         };
         Auction.prototype.addBid = function (bid) {
             this.bids[bid.getId()] = bid;
@@ -47,7 +53,7 @@ var Madbid;
                 bids: bids,
                 bidders: bidders,
                 item: item,
-                endTime: this.endTime
+                endTime: this.endTime.toISOString()
             };
             return obj;
         };
