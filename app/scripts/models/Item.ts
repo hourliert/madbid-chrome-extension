@@ -4,6 +4,8 @@
 
 /// <reference path='../_all.ts' />
 
+'use strict';
+
 module Madbid{
     export interface IItemMap{
         [index: number]: Item;

@@ -1085,6 +1085,7 @@ interface HighchartsPointObject {
     update(options: any, redraw: boolean, animation: HighchartsAnimation): void;
     x: number;
     y: number;
+    name?: any;
 }
 
 interface HighchartsSeriesObject {

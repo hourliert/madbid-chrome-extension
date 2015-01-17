@@ -4,11 +4,13 @@
 
 /// <reference path='../_all.ts' />
 
-module Madbid{
+'use strict';
+
+module Madbid.services {
     export class NetworkService{
         public static $inject = ['$q'];
 
-        private listeners: Array<Function>;
+        private listeners: Array<(d: any) => void>;
 
         constructor(
             private $q: ng.IQService
@@ -40,9 +42,9 @@ module Madbid{
             }
         }
 
-        public addListener(f: Function){
+        public addListener(f: (d: any) => void){
             this.listeners.push(f);
         }
     }
-    angular.module('madbid.service').service('NetworkService', NetworkService);
+    Madbid.registerService('NetworkService', NetworkService);
 }

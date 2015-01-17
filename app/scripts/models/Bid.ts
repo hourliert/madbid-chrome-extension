@@ -4,6 +4,8 @@
 
 /// <reference path='../_all.ts' />
 
+'use strict';
+
 module Madbid{
     export interface IBidMap{
         [index: string]: Bid;
@@ -40,6 +42,25 @@ module Madbid{
 
         public isOn(auction: Auction): boolean{
             return auction === this.auction;
+        }
+
+        public hasBidder(bidder: Bidder): boolean{
+            return bidder === this.bidder;
+        }
+
+        public isBetween(date1: Date, date2: Date): boolean{
+            if (!date1 && !date2){
+                return true;
+            } else if (!date2){
+                if (date1 < this.date){
+                    return true;
+                }
+            } else {
+                if (date1 < this.date && this.date < date2){
+                    return true;
+                }
+            }
+            return false;
         }
 
         public setBidder(bidder: Bidder){

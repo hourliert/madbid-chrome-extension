@@ -4,7 +4,9 @@
 
 /// <reference path='../_all.ts' />
 
-module Madbid{
+'use strict';
+
+module Madbid.filters {
     export class AuctionWithName{
         public filter(input: IAuctionMap){
             var res: IAuctionMap = {},
@@ -21,21 +23,5 @@ module Madbid{
         }
     }
 
-    angular.module('madbid.filter').filter('auctionWithName', () => (new AuctionWithName().filter));
+    Madbid.registerFilter('auctionWithName', () => (new AuctionWithName().filter));
 }
-
-/*
-angular.module('madbid.filter')
-.filter('excludeUnamed',function(){
-    return function(inputArray){
-       var res ={};
-
-        for (var i in inputArray){
-            if (inputArray[i].title && inputArray[i].updatePoints.length){
-                res[i] = inputArray[i];
-            }
-        }
-
-        return res;
-    };
-});*/

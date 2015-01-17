@@ -2,75 +2,49 @@
  * Created by thomashourlier on 12/01/15.
  */
 /// <reference path='../_all.ts' />
+'use strict';
 var Madbid;
 (function (Madbid) {
-    var AuctionController = (function () {
-        function AuctionController($scope, $timeout, $interval, networkService, auctionModel) {
-            this.$scope = $scope;
-            this.$timeout = $timeout;
-            this.$interval = $interval;
-            this.networkService = networkService;
-            this.auctionModel = auctionModel;
-            this.selection = {};
-            this.model = auctionModel.getModel();
-            networkService.addListener(function (res) {
-                $scope.$apply(function () {
-                    auctionModel.handleUpdate(res);
+    var controllers;
+    (function (controllers) {
+        var AuctionController = (function () {
+            function AuctionController($scope, $timeout, $interval, networkService, auctionModel) {
+                this.$scope = $scope;
+                this.$timeout = $timeout;
+                this.$interval = $interval;
+                this.networkService = networkService;
+                this.auctionModel = auctionModel;
+                this.selection = {};
+                this.timeSelection = {
+                    dateMin: null,
+                    dateMax: null
+                };
+                this.model = auctionModel.getModel();
+                networkService.addListener(function (res) {
+                    $scope.$apply(function () {
+                        auctionModel.handleUpdate(res);
+                    });
                 });
-            });
-            $interval(angular.bind(this, function () {
-                this.time = new Date();
-            }), 1000);
-        }
-        AuctionController.prototype.resetCache = function () {
-            this.auctionModel.clearCache();
-        };
-        AuctionController.$inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
-        return AuctionController;
-    })();
-    Madbid.AuctionController = AuctionController;
-    angular.module('madbid.controller').controller('AuctionController', AuctionController);
+                $interval(angular.bind(this, function () {
+                    this.time = new Date();
+                }), 1000);
+            }
+            AuctionController.prototype.resetCache = function () {
+                this.auctionModel.clearCache();
+            };
+            AuctionController.prototype.changingAuction = function () {
+                this.timeSelection.dateMin = null;
+                this.timeSelection.dateMax = null;
+                this.selection.bidder = null;
+            };
+            AuctionController.prototype.observeBidderSelection = function (bidderName) {
+                this.selection.bidder = this.model.getBidder(bidderName);
+            };
+            AuctionController.$inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
+            return AuctionController;
+        })();
+        controllers.AuctionController = AuctionController;
+        Madbid.registerController('AuctionController', AuctionController);
+    })(controllers = Madbid.controllers || (Madbid.controllers = {}));
 })(Madbid || (Madbid = {}));
-/*var AuctionController = function($scope, $timeout, $interval, NetworkService, AuctionModel){
-  var timer;
-
-  //this.model = AuctionModel.getAuctionHouse();
-  this.dateFilter = 0;
-
-
-  this.time = new Date();
-
-  this.selection = {
-    selectedItem : '',
-    selectedBidder : ''
-  };
-
-  NetworkService.addListener(function(res){
-    $scope.$apply(function(){
-      AuctionModel.handleUpdate(res);
-    })
-  });
-
-  this.resetCache = function(){
-    AuctionModel.clearCache();
-    this.selection.selectedBidder = '';
-    this.selection.selectedItem = '';
-  };
-
-  this.changeAuction = function(){
-    this.model.dateMin = null;
-    this.model.dateMax = null;
-  };
-
-  timer = $interval(angular.bind(this, function(){
-   this.time = new Date();
-  }), 1000);
-
-  $scope.$on('$destroy', function(){
-    $interval.cancel(timer);
-  });
-};
-
-
-AuctionController.$inject= ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];*/
 //# sourceMappingURL=AuctionController.js.map

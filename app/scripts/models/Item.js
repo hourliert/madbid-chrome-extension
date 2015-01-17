@@ -2,6 +2,7 @@
  * Created by thomashourlier on 15/01/15.
  */
 /// <reference path='../_all.ts' />
+'use strict';
 var Madbid;
 (function (Madbid) {
     var Item = (function () {

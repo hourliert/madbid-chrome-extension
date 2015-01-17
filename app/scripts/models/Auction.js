@@ -2,6 +2,7 @@
  * Created by thomashourlier on 15/01/15.
  */
 /// <reference path='../_all.ts' />
+'use strict';
 var Madbid;
 (function (Madbid) {
     var Auction = (function () {
@@ -31,10 +32,12 @@ var Madbid;
         Auction.prototype.getNumberBids = function () {
             return Object.keys(this.bids).length;
         };
-        Auction.prototype.hasNewBidderSince = function (biddersInCourse) {
+        Auction.prototype.hasNewBidderOnSince = function (biddersInCourse, auction, date1, date2) {
             var i, bidder;
             for (i in this.bidders) {
                 bidder = this.bidders[i];
+                if (!bidder.hasBidOnBetween(auction, date1, date2))
+                    continue;
                 if (!biddersInCourse[bidder.getId()]) {
                     return true;
                 }

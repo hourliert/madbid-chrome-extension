@@ -4,7 +4,9 @@
 
 /// <reference path='../_all.ts' />
 
-module Madbid{
+'use strict';
+
+module Madbid {
     export interface ISerializedAuctionHouse{
         auctions: Array<ISerializedAuction>;
     }

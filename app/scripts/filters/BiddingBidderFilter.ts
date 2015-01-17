@@ -4,7 +4,9 @@
 
 /// <reference path='../_all.ts' />
 
-module Madbid{
+'use strict';
+
+module Madbid.filters {
     export class BiddingBidder{
         public filter(input: IBidderMap, auction: Auction): any{
             if (!auction) return input;
@@ -15,7 +17,7 @@ module Madbid{
 
             for (i in input){
                 bidder = input[i];
-                if (bidder.isBiddingOn(auction)) {
+                if (bidder.hasBidOn(auction)) {
                    res[bidder.getId()] = bidder;
                 }
             }
@@ -23,28 +25,5 @@ module Madbid{
         }
     }
 
-    angular.module('madbid.filter').filter('biddingBidder', () => (new BiddingBidder().filter));
+    Madbid.registerFilter('biddingBidder', () => (new BiddingBidder().filter));
 }
-/*
-angular.module('madbid.filter')
-    .filter('bidders',function(){
-        return function(inputArray, selectedItem){
-            if (!selectedItem){
-                return inputArray;
-            } else {
-                var res ={},
-                    bidder;
-
-                for (i in inputArray){
-                    bidder = inputArray[i];
-                    for (j in bidder.bids){
-                        if (j === selectedItem){
-                            res[i] = inputArray[i];
-                            break;
-                        }
-                    }
-                }
-                return res;
-            }
-        };
-    });*/

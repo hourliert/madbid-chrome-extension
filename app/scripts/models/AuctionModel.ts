@@ -4,7 +4,9 @@
 
 /// <reference path='../_all.ts' />
 
-module Madbid{
+'use strict';
+
+module Madbid.models {
     export class AuctionModel{
         public static $inject = ['storage', '$interval'];
 
@@ -237,11 +239,8 @@ module Madbid{
             //console.log(this.ah);
             this.saveData();
         }
-
-
     }
 
-    angular.module('madbid.model')
-        .service('AuctionModel', Madbid.AuctionModel);
+    Madbid.registerModel('AuctionModel', AuctionModel);
 }
 

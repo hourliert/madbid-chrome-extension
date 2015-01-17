@@ -4,6 +4,8 @@
 
 /// <reference path='../_all.ts' />
 
+'use strict';
+
 module Madbid{
     export interface IAuctionMap{
         [index: number]: Auction;
@@ -43,35 +45,33 @@ module Madbid{
         public getId(): number{
             return this.id;
         }
-
         public updateEndTime(reference: Date){
             this.remainingTime = (+reference - +this.endTime) / 1000;
         }
-
         public isValid(): boolean{
             return this.item.isValid() && this.hasBid();
         }
-
         public hasBid(): boolean{
             return Object.keys(this.bids).length > 0;
         }
         public getNumberBids(): number{
             return Object.keys(this.bids).length;
         }
-
-        public hasNewBidderSince(biddersInCourse: IBidderMap): boolean{
+        public hasNewBidderOnSince(biddersInCourse: IBidderMap, auction: Auction, date1?: Date, date2?: Date): boolean{
             var i: any,
                 bidder: Bidder;
 
             for (i in this.bidders){
-                bidder = this.bidders[i]
+                bidder = this.bidders[i];
+
+                if (!bidder.hasBidOnBetween(auction, date1, date2)) continue;
+
                 if (!biddersInCourse[bidder.getId()]){
                     return true;
                 }
             }
             return false;
         }
-
         public addBid(bid: Bid){
             this.bids[bid.getId()] = bid;
             this.lastBid = bid;
@@ -80,7 +80,6 @@ module Madbid{
             this.bidders[bidder.getId()] = bidder;
             this.lastBidder = bidder;
         }
-
         public toJson(): ISerializedAuction{
             var bids: Array<ISerializedBid> = [],
                 item: ISerializedItem,

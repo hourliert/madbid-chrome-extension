@@ -2,6 +2,7 @@
  * Created by thomashourlier on 15/01/15.
  */
 /// <reference path='../_all.ts' />
+'use strict';
 var Madbid;
 (function (Madbid) {
     var Bid = (function () {
@@ -19,6 +20,25 @@ var Madbid;
         };
         Bid.prototype.isOn = function (auction) {
             return auction === this.auction;
+        };
+        Bid.prototype.hasBidder = function (bidder) {
+            return bidder === this.bidder;
+        };
+        Bid.prototype.isBetween = function (date1, date2) {
+            if (!date1 && !date2) {
+                return true;
+            }
+            else if (!date2) {
+                if (date1 < this.date) {
+                    return true;
+                }
+            }
+            else {
+                if (date1 < this.date && this.date < date2) {
+                    return true;
+                }
+            }
+            return false;
         };
         Bid.prototype.setBidder = function (bidder) {
             this.bidder = bidder;

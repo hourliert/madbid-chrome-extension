@@ -4,11 +4,14 @@
 
 /// <reference path='../_all.ts' />
 
-module Madbid{
-    export interface IAuctionInfoScope extends ng.IScope{
+'use strict';
+
+module Madbid.directives {
+    interface IAuctionInfoScope extends ng.IScope{
         ngModel: AuctionHouse;
         auction: Auction;
         bidder: Bidder;
+        timeSelection: ITimeSelection;
     }
 
     export function AuctionInfoDirective(): ng.IDirective {
@@ -18,12 +21,14 @@ module Madbid{
             scope: {
                 ngModel: '=',
                 auction: '=',
-                bidder: '='
+                bidder: '=',
+                timeSelection: '='
             },
             link: function ($scope: IAuctionInfoScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) {
-                var ah: AuctionHouse = <AuctionHouse> $scope.ngModel,
-                    auction: Auction = <Auction> $scope.auction,
-                    bidder: Bidder = <Bidder> $scope.bidder,
+                var ah: AuctionHouse = $scope.ngModel,
+                    auction: Auction = $scope.auction,
+                    bidder: Bidder = $scope.bidder,
+                    timeSelection: ITimeSelection = $scope.timeSelection,
                     container: ng.IAugmentedJQuery,
                     graphOptions: HighchartsOptions = {
                         chart: {
@@ -31,19 +36,21 @@ module Madbid{
                             type: 'line',
                             zoomType: 'x',
                             events: {
-                                selection: function(e){
-                                    /*if (e.xAxis){
-                                        $scope.ngModel.dateMin = e.xAxis[0].min;
+                                selection: function(e: HighchartsSelectionEvent){
+                                    var extremes: HighchartsExtremes = highCharts.xAxis[0].getExtremes();
 
-                                        if (e.xAxis[0].max > highCharts.xAxis[0].dataMax){
-                                            $scope.ngModel.dateMax = Number.MAX_VALUE;
+                                    if (e.xAxis){
+                                        timeSelection.dateMin = new Date(e.xAxis[0].min);
+
+                                        if (e.xAxis[0].max > extremes.dataMax){
+                                            timeSelection.dateMax = null;
                                         } else {
-                                            $scope.ngModel.dateMax = e.xAxis[0].max;
+                                            timeSelection.dateMax = new Date(e.xAxis[0].max);
                                         }
                                     } else {
-                                        $scope.ngModel.dateMin = null;
-                                        $scope.ngModel.dateMax = null;
-                                    }*/
+                                        timeSelection.dateMin = null;
+                                        timeSelection.dateMax = null;
+                                    }
                                 }
                             }
                         },
@@ -124,12 +131,13 @@ module Madbid{
                         series: []
                     },
                     highCharts: HighchartsChartObject,
-                    graphBidIndexes: IStringNumberMap = {};
+                    graphBidIndexes: IStringNumberMap = {},
+                    graphBid: IBidMap = {};
 
-                function buildSerie(auction: Auction, bidder: Bidder): HighchartsSeriesOptions{
+                function buildSerie(auction: Auction, bidder: Bidder, chart: HighchartsChartObject): HighchartsSeriesOptions{
                     var i: any,
                         bid: Bid,
-                        ii: number,
+                        highchartPoint: HighchartsPointObject,
                         newLength: number,
                         serie: HighchartsSeriesOptions = {
                             name: 'Bids',
@@ -143,14 +151,23 @@ module Madbid{
                     for (i in auction.bids){
                         bid = auction.bids[i];
 
-                        if (bidder && bid.bidder !== bidder) continue;
-
                         newLength = serie.data.push({
+                            id: bid.getId(),
                             x: bid.date,
                             y: bid.value,
                             name: bid.bidder.getId()
                         });
+
+                        if (bidder && bid.hasBidder(bidder)){
+                            highchartPoint = chart.get(bid.getId());
+                            try {
+                                highchartPoint.select(true, true);
+                            } catch(e){
+                            }
+                        }
+
                         graphBidIndexes[bid.getId()] = newLength- 1;
+                        graphBid[bid.getId()] = bid;
                     }
 
                     serie.data.sort(function(t1, t2){
@@ -164,22 +181,52 @@ module Madbid{
 
                     return serie;
                 }
-                function updateSerie(auction:Auction, bidder:Bidder, charts: HighchartsChartObject){
+                function updateSerie(auction: Auction, bidder: Bidder, chart: HighchartsChartObject){
                     var i: any,
+                        highchartPoint: HighchartsPointObject,
+                        bid: Bid;
+
+                    for (i in graphBid){
+                        bid = graphBid[i];
+
+                        highchartPoint = chart.get(bid.getId());
+
+                        try {
+                            if (bidder && bid.hasBidder(bidder)) {
+                                highchartPoint.select(true, true);
+                            } else {
+                                highchartPoint.select(false, true);
+                            }
+                        } catch(e){
+                        }
+                    }
+                }
+                function completeSerie(auction:Auction, bidder:Bidder, chart: HighchartsChartObject){
+                    var i: any,
+                        highchartPoint: HighchartsPointObject,
                         bid: Bid;
 
                     for (i in auction.bids){
                         bid = auction.bids[i];
 
                         if (!graphBidIndexes[bid.getId()]){
-                            if (bidder && bid.bidder !== bidder) continue;
-
-                            charts.series[0].addPoint({
+                            chart.series[0].addPoint({
+                                id: bid.getId(),
                                 x: bid.date,
                                 y: bid.value,
                                 name: bid.bidder.getId()
                             }, true, false);
-                            graphBidIndexes[bid.getId()] = charts.series[0].data.length - 1;
+
+                            if (bidder && bid.hasBidder(bidder)){
+                                highchartPoint = chart.get(bid.getId());
+                                try {
+                                    highchartPoint.select(true, true);
+                                } catch(e){
+                                }
+                            }
+
+                            graphBidIndexes[bid.getId()] = chart.series[0].data.length - 1;
+                            graphBid[bid.getId()] = bid;
                         }
                     }
                 }
@@ -188,22 +235,20 @@ module Madbid{
                 $element.append(container);
 
                 highCharts = new Highcharts.Chart(graphOptions);
-                highCharts.addSeries(buildSerie(auction,bidder), true);
+                highCharts.addSeries(buildSerie(auction, bidder, highCharts), true);
 
                 $scope.$watch('bidder', function(newVal: Bidder, oldVal: Bidder){
-                    if (newVal && newVal !== oldVal){
+                    if (newVal !== oldVal){
                         bidder = newVal;
 
-                        highCharts.destroy();
-                        highCharts = new Highcharts.Chart(graphOptions);
-                        highCharts.addSeries(buildSerie(auction,bidder), true);
+                        updateSerie(auction, bidder, highCharts);
                     }
                 });
                 $scope.$watch(function() {
                     return auction.getNumberBids();
                 }, function(newVal: number, oldVal: number){
                     if (newVal && newVal !== oldVal){
-                        updateSerie(auction, bidder, highCharts);
+                        completeSerie(auction, bidder, highCharts);
                     }
                 });
                 $scope.$watch('auction', function(newVal: Auction, oldVal: Auction){
@@ -212,7 +257,7 @@ module Madbid{
 
                         highCharts.destroy();
                         highCharts = new Highcharts.Chart(graphOptions);
-                        highCharts.addSeries(buildSerie(auction,bidder), true);
+                        highCharts.addSeries(buildSerie(auction, bidder, highCharts), true);
 
                         highCharts.setTitle({
                             text: 'Bids for ' + auction.item.name || auction.getId().toString()
@@ -222,6 +267,7 @@ module Madbid{
             }
         };
     }
-    angular.module('madbid.directive').directive('auctionInfo', AuctionInfoDirective);
+
+    Madbid.registerDirective('auctionInfo', AuctionInfoDirective);
 }
 

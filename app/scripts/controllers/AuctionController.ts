@@ -4,28 +4,35 @@
 
 /// <reference path='../_all.ts' />
 
-module Madbid{
-    export interface IUserSelection{
+'use strict';
+
+module Madbid.controllers {
+    interface IUserSelection{
         auction?: Auction;
         bidder?: Bidder;
     }
 
-
-    export class AuctionController{
+    export class AuctionController {
         public static $inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
 
         public model: AuctionHouse;
         public time: Date;
         public selection: IUserSelection;
+        public timeSelection: ITimeSelection;
 
         constructor(
             private $scope: ng.IScope,
             private $timeout: ng.ITimeoutService,
             private $interval: ng.IIntervalService,
-            private networkService: NetworkService,
-            private auctionModel: AuctionModel
+            private networkService: Madbid.services.NetworkService,
+            private auctionModel: Madbid.models.AuctionModel
         ){
             this.selection = {};
+            this.timeSelection = {
+                dateMin: null,
+                dateMax: null
+            };
+
             this.model = auctionModel.getModel();
 
             networkService.addListener(function(res){
@@ -33,7 +40,6 @@ module Madbid{
                     auctionModel.handleUpdate(res);
                 });
             });
-
             $interval(angular.bind(this, function(){
                 this.time = new Date();
             }), 1000);
@@ -42,52 +48,15 @@ module Madbid{
         public resetCache(){
             this.auctionModel.clearCache();
         }
+        public changingAuction(){
+            this.timeSelection.dateMin = null;
+            this.timeSelection.dateMax = null;
+            this.selection.bidder = null;
+        }
+        public observeBidderSelection(bidderName: string){
+            this.selection.bidder = this.model.getBidder(bidderName);
+        }
     }
 
-    angular.module('madbid.controller').controller('AuctionController', AuctionController);
+    Madbid.registerController('AuctionController', AuctionController);
 }
-
-/*var AuctionController = function($scope, $timeout, $interval, NetworkService, AuctionModel){
-  var timer;
-
-  //this.model = AuctionModel.getAuctionHouse();
-  this.dateFilter = 0;
-
-
-  this.time = new Date();
-
-  this.selection = {
-    selectedItem : '',
-    selectedBidder : ''
-  };
-
-  NetworkService.addListener(function(res){
-    $scope.$apply(function(){
-      AuctionModel.handleUpdate(res);
-    })
-  });
-
-  this.resetCache = function(){
-    AuctionModel.clearCache();
-    this.selection.selectedBidder = '';
-    this.selection.selectedItem = '';
-  };
-
-  this.changeAuction = function(){
-    this.model.dateMin = null;
-    this.model.dateMax = null;
-  };
-
-  timer = $interval(angular.bind(this, function(){
-   this.time = new Date();
-  }), 1000);
-
-  $scope.$on('$destroy', function(){
-    $interval.cancel(timer);
-  });
-};
-
-
-AuctionController.$inject= ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];*/
-
-

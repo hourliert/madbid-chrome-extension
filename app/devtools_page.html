@@ -9,7 +9,7 @@
         <button type="button" ng-click="ctrl.resetCache()">Reset Cache</button>
 
         <label>Select an auction :
-          <select ng-model="ctrl.selection.auction" ng-options="val as (val.item.name || key) for (key,val) in ctrl.model.auctions | auctionWithName">
+          <select ng-model="ctrl.selection.auction" ng-change="ctrl.changingAuction()" ng-options="val as (val.item.name || key) for (key,val) in ctrl.model.auctions | auctionWithName">
             <option value="">--Empty--</option>
           </select>
         </label>
@@ -26,18 +26,17 @@
         <!--<h3 ng-if="ctrl.selection.auction">{{ctrl.model.items[ctrl.selection.selectedItem].remaining}} seconds remain</h3>
         <h3 ng-if="ctrl.selection.auction">{{ctrl.model.items[ctrl.selection.selectedItem].price}} euros</h3>-->
 
-        <auction-info ng-if="ctrl.selection.auction" ng-model="ctrl.model" auction="ctrl.selection.auction" bidder="ctrl.selection.bidder"></auction-info>
+        <auction-info ng-if="ctrl.selection.auction"
+                      ng-model="ctrl.model"
+                      auction="ctrl.selection.auction"
+                      bidder="ctrl.selection.bidder"
+                      time-selection="ctrl.timeSelection"></auction-info>
 
-        <bidder-info ng-if="ctrl.selection.auction" ng-model="ctrl.model" auction="ctrl.selection.auction"></bidder-info>
-
-
-
-
-
-
-
-
-
+        <bidder-info ng-if="ctrl.selection.auction"
+                     ng-model="ctrl.model"
+                     auction="ctrl.selection.auction"
+                     time-selection="ctrl.timeSelection"
+                     observe-bidder-selection="ctrl.observeBidderSelection(bidderName)"></bidder-info>
 
 
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
