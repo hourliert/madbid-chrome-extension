@@ -5,13 +5,20 @@
 'use strict';
 var Madbid;
 (function (Madbid) {
+    (function (BidderType) {
+        BidderType[BidderType["Aggressive"] = 0] = "Aggressive";
+        BidderType[BidderType["Pacing"] = 1] = "Pacing";
+    })(Madbid.BidderType || (Madbid.BidderType = {}));
+    var BidderType = Madbid.BidderType;
     var Bidder = (function () {
-        function Bidder(ah, name) {
-            this.name = name;
+        function Bidder(ah, param) {
+            this.name = param.bidderName;
             this.ah = ah;
             this.bids = {};
             this.auctions = {};
         }
+        Bidder.prototype.updateStat = function (param) {
+        };
         Bidder.prototype.getId = function () {
             return this.name;
         };

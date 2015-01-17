@@ -6,9 +6,10 @@
 var Madbid;
 (function (Madbid) {
     var Bid = (function () {
-        function Bid(auction, bidder) {
+        function Bid(auction, bidder, param) {
             this.auction = auction;
             this.bidder = bidder;
+            this.updateStat(param);
             this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
         }
         Bid.prototype.updateStat = function (param) {
@@ -16,7 +17,7 @@ var Madbid;
                 this.value = param.value;
             if (param.date)
                 this.date = new Date(param.date);
-            this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
+            this.delayBeforeEnd = (+this.auction.endTime - +this.date) / 1000;
         };
         Bid.prototype.isOn = function (auction) {
             return auction === this.auction;

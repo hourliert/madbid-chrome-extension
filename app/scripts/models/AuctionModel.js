@@ -19,27 +19,36 @@ var Madbid;
                     this.ah.updateAuctionsEndTime(this.timeReference);
                 }), 1000);
             }
-            AuctionModel.prototype.singletonBidder = function (name) {
-                var bidder = this.ah.getBidder(name);
+            AuctionModel.prototype.singletonBidder = function (param) {
+                var bidder = this.ah.getBidder(param.bidderName);
                 if (!bidder) {
-                    bidder = new Madbid.Bidder(this.ah, name);
+                    bidder = new Madbid.Bidder(this.ah, param);
                     this.ah.addBidder(bidder);
+                }
+                else {
+                    bidder.updateStat(param);
                 }
                 return bidder;
             };
-            AuctionModel.prototype.singletonItem = function (id) {
-                var item = this.ah.getItem(id);
+            AuctionModel.prototype.singletonItem = function (param) {
+                var item = this.ah.getItem(param.id);
                 if (!item) {
-                    item = new Madbid.Item(this.ah, id);
+                    item = new Madbid.Item(this.ah, param);
                     this.ah.addItem(item);
+                }
+                else {
+                    item.updateStat(param);
                 }
                 return item;
             };
-            AuctionModel.prototype.singletonAuction = function (item) {
+            AuctionModel.prototype.singletonAuction = function (item, param) {
                 var auction = this.ah.getAuction(item.getId());
                 if (!auction) {
-                    auction = new Madbid.Auction(this.ah, item);
+                    auction = new Madbid.Auction(this.ah, item, param);
                     this.ah.addAuction(auction);
+                }
+                else {
+                    auction.updateStat(param);
                 }
                 return auction;
             };
@@ -59,24 +68,21 @@ var Madbid;
                     item = auction.item;
                     bidders = auction.bidders;
                     bids = auction.bids;
-                    localItem = this.singletonItem(item.id);
-                    localItem.updateStat(item);
+                    localItem = this.singletonItem(item);
                     itemsRes[localItem.getId()] = localItem;
-                    localAuction = this.singletonAuction(localItem);
-                    localAuction.updateStat(auction);
+                    localAuction = this.singletonAuction(localItem, auction);
                     auctionsRes[localAuction.getId()] = localAuction;
                     for (b = 0, bb = bidders.length; b < bb; b++) {
                         bidder = bidders[b];
-                        localBidder = this.singletonBidder(bidder.bidderName);
+                        localBidder = this.singletonBidder(bidder);
                         localBidder.addAuction(localAuction);
                         biddersRes[localBidder.getId()] = localBidder;
                         localAuction.addBidder(localBidder);
                     }
                     for (b = 0, bb = bids.length; b < bb; b++) {
                         bid = bids[b];
-                        localBidder = this.singletonBidder(bid.bidderName);
-                        localBid = new Madbid.Bid(localAuction, localBidder);
-                        localBid.updateStat(bid);
+                        localBidder = this.singletonBidder({ bidderName: bid.bidderName });
+                        localBid = new Madbid.Bid(localAuction, localBidder, bid);
                         localBidder.addAuction(localAuction);
                         localBidder.addBid(localBid);
                         localAuction.addBidder(localBidder);
@@ -104,19 +110,18 @@ var Madbid;
                                 date: auction.date_bid
                             };
                             auctionParam = {
+                                id: auction.auction_id,
                                 endTime: auction.date_timeout
                             };
                         }
                         catch (e) {
                             continue;
                         }
-                        localItem = this.singletonItem(auction.auction_id);
-                        localAuction = this.singletonAuction(localItem);
-                        localBidder = this.singletonBidder(auction.highest_bidder);
-                        localBid = new Madbid.Bid(localAuction, localBidder);
+                        localItem = this.singletonItem({ id: auction.auction_id });
+                        localAuction = this.singletonAuction(localItem, auctionParam);
+                        localBidder = this.singletonBidder({ bidderName: auction.highest_bidder });
+                        localBid = new Madbid.Bid(localAuction, localBidder, bidParam);
                         localItem.setAuction(localAuction);
-                        localBid.updateStat(bidParam);
-                        localAuction.updateStat(auctionParam);
                         localAuction.addBidder(localBidder);
                         localAuction.addBid(localBid);
                         localBidder.addBid(localBid);
@@ -132,6 +137,7 @@ var Madbid;
                             if (!item.auction_id || !item.auction_data.last_bid.highest_bidder)
                                 throw 'Incorrect Item';
                             itemParam = {
+                                id: item.auction_id,
                                 name: item.title,
                                 creditCost: item.auction_data.cerdit_cost,
                                 shippingCost: item.shipping_costs,
@@ -139,24 +145,23 @@ var Madbid;
                                 retailPrice: item.rrp
                             };
                             bidParam = {
+                                bidderName: item.auction_data.last_bid.highest_bidder,
                                 value: item.auction_data.last_bid.highest_bid,
                                 date: item.auction_data.last_bid.date_bid
                             };
                             auctionParam = {
+                                id: item.auction_id,
                                 endTime: item.auction_data.last_bid.date_timeout
                             };
                         }
                         catch (e) {
                             continue;
                         }
-                        localItem = this.singletonItem(item.auction_id);
-                        localAuction = this.singletonAuction(localItem);
-                        localBidder = this.singletonBidder(item.auction_data.last_bid.highest_bidder);
-                        localBid = new Madbid.Bid(localAuction, localBidder);
-                        localItem.updateStat(itemParam);
+                        localItem = this.singletonItem(itemParam);
+                        localAuction = this.singletonAuction(localItem, auctionParam);
+                        localBidder = this.singletonBidder({ bidderName: item.auction_data.last_bid.highest_bidder });
+                        localBid = new Madbid.Bid(localAuction, localBidder, bidParam);
                         localItem.setAuction(localAuction);
-                        localBid.updateStat(bidParam);
-                        localAuction.updateStat(auctionParam);
                         localAuction.addBidder(localBidder);
                         localAuction.addBid(localBid);
                         localBidder.addBid(localBid);

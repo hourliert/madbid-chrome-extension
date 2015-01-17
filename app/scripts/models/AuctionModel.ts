@@ -27,27 +27,33 @@ module Madbid.models {
             }), 1000);
         }
 
-        private singletonBidder(name: string){
-            var bidder: Bidder = this.ah.getBidder(name);
+        private singletonBidder(param: ISerializedBidder){
+            var bidder: Bidder = this.ah.getBidder(param.bidderName);
             if (!bidder){
-                bidder = new Bidder(this.ah, name);
+                bidder = new Bidder(this.ah, param);
                 this.ah.addBidder(bidder);
+            } else {
+                bidder.updateStat(param);
             }
             return bidder;
         }
-        private singletonItem(id: number){
-            var item: Item = this.ah.getItem(id);
+        private singletonItem(param: ISerializedItem){
+            var item: Item = this.ah.getItem(param.id);
             if (!item){
-                item = new Item(this.ah, id);
+                item = new Item(this.ah, param);
                 this.ah.addItem(item);
+            } else {
+                item.updateStat(param);
             }
             return item;
         }
-        private singletonAuction(item: Item){
+        private singletonAuction(item: Item, param: ISerializedAuction){
             var auction: Auction = this.ah.getAuction(item.getId());
             if (!auction){
-                auction = new Auction(this.ah, item);
+                auction = new Auction(this.ah, item, param);
                 this.ah.addAuction(auction);
+            } else {
+                auction.updateStat(param);
             }
             return auction;
         }
@@ -96,19 +102,17 @@ module Madbid.models {
                 bidders = auction.bidders;
                 bids = auction.bids;
 
-                localItem = this.singletonItem(item.id);
-                localItem.updateStat(item);
+                localItem = this.singletonItem(item);
                 itemsRes[localItem.getId()] = localItem;
 
-                localAuction = this.singletonAuction(localItem);
-                localAuction.updateStat(auction);
+                localAuction = this.singletonAuction(localItem, auction);
                 auctionsRes[localAuction.getId()] = localAuction;
 
 
                 for (b = 0, bb = bidders.length; b < bb; b++){
                     bidder = bidders[b];
 
-                    localBidder = this.singletonBidder(bidder.bidderName);
+                    localBidder = this.singletonBidder(bidder);
                     localBidder.addAuction(localAuction);
                     biddersRes[localBidder.getId()] = localBidder;
 
@@ -118,10 +122,8 @@ module Madbid.models {
                 for (b = 0, bb = bids.length; b < bb; b++){
                     bid = bids[b];
 
-                    localBidder = this.singletonBidder(bid.bidderName);
-                    localBid = new Bid(localAuction, localBidder);
-
-                    localBid.updateStat(bid);
+                    localBidder = this.singletonBidder({bidderName: bid.bidderName});
+                    localBid = new Bid(localAuction, localBidder, bid);
 
                     localBidder.addAuction(localAuction);
                     localBidder.addBid(localBid);
@@ -166,22 +168,20 @@ module Madbid.models {
                             date: auction.date_bid
                         };
                         auctionParam = {
+                            id: auction.auction_id,
                             endTime: auction.date_timeout
                         };
                     } catch(e) {
                         continue;
                     }
 
-                    localItem = this.singletonItem(auction.auction_id);
-                    localAuction = this.singletonAuction(localItem);
-                    localBidder = this.singletonBidder(auction.highest_bidder);
-                    localBid = new Bid(localAuction, localBidder);
+                    localItem = this.singletonItem({id: auction.auction_id});
+                    localAuction = this.singletonAuction(localItem, auctionParam);
+                    localBidder = this.singletonBidder({bidderName: auction.highest_bidder});
+                    localBid = new Bid(localAuction, localBidder, bidParam);
 
                     localItem.setAuction(localAuction);
 
-                    localBid.updateStat(bidParam);
-
-                    localAuction.updateStat(auctionParam);
                     localAuction.addBidder(localBidder);
                     localAuction.addBid(localBid);
 
@@ -198,6 +198,7 @@ module Madbid.models {
                     try {
                         if (!item.auction_id || !item.auction_data.last_bid.highest_bidder) throw 'Incorrect Item';
                         itemParam = {
+                            id: item.auction_id,
                             name: item.title,
                             creditCost: item.auction_data.cerdit_cost,
                             shippingCost: item.shipping_costs,
@@ -205,10 +206,12 @@ module Madbid.models {
                             retailPrice: item.rrp
                         };
                         bidParam = {
+                            bidderName: item.auction_data.last_bid.highest_bidder,
                             value: item.auction_data.last_bid.highest_bid,
                             date: item.auction_data.last_bid.date_bid
                         };
                         auctionParam = {
+                            id: item.auction_id,
                             endTime: item.auction_data.last_bid.date_timeout
                         };
                     } catch (e) {
@@ -216,17 +219,13 @@ module Madbid.models {
                     }
 
 
-                    localItem = this.singletonItem(item.auction_id);
-                    localAuction = this.singletonAuction(localItem);
-                    localBidder = this.singletonBidder(item.auction_data.last_bid.highest_bidder);
-                    localBid = new Bid(localAuction, localBidder);
+                    localItem = this.singletonItem(itemParam);
+                    localAuction = this.singletonAuction(localItem, auctionParam);
+                    localBidder = this.singletonBidder({bidderName: item.auction_data.last_bid.highest_bidder});
+                    localBid = new Bid(localAuction, localBidder, bidParam);
 
-                    localItem.updateStat(itemParam);
                     localItem.setAuction(localAuction);
 
-                    localBid.updateStat(bidParam);
-
-                    localAuction.updateStat(auctionParam);
                     localAuction.addBidder(localBidder);
                     localAuction.addBid(localBid);
 

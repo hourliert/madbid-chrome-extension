@@ -26,10 +26,13 @@ module Madbid{
         public value: number;
         public date: Date;
         private delta: number;
+        public delayBeforeEnd: number;
 
-        constructor(auction: Auction, bidder: Bidder){
+        constructor(auction: Auction, bidder: Bidder, param: ISerializedBid){
             this.auction = auction;
             this.bidder = bidder;
+
+            this.updateStat(param);
             this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
         }
 
@@ -37,7 +40,7 @@ module Madbid{
             if (param.value) this.value = param.value;
             if (param.date) this.date = new Date(param.date);
 
-            this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
+            this.delayBeforeEnd = (+this.auction.endTime - +this.date) / 1000;
         }
 
         public isOn(auction: Auction): boolean{

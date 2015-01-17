@@ -11,7 +11,7 @@ module Madbid{
         [index: number]: Item;
     }
     export interface ISerializedItem{
-        id?: number;
+        id: number;
         name?: string;
         creditCost?: number;
         shippingCost?: number;
@@ -30,9 +30,10 @@ module Madbid{
         private buyNowPrice: number;
         private retailPrice: number;
 
-        constructor(ah: AuctionHouse, id: number){
+        constructor(ah: AuctionHouse, param: ISerializedItem){
             this.ah = ah;
-            this.id = id;
+            this.id = param.id;
+            this.updateStat(param);
         }
 
         public getId(): number{

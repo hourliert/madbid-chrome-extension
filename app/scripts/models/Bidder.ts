@@ -14,19 +14,29 @@ module Madbid{
         bidderName: string;
     }
 
-   export class Bidder implements ISerializable{
+    export enum BidderType{
+        Aggressive,
+        Pacing
+    }
+
+    export class Bidder implements ISerializable{
        private ah: AuctionHouse;
        private name: string;
        private bids: IBidMap;
        private auctions: IAuctionMap;
 
-       constructor(ah: AuctionHouse, name: string){
-           this.name = name;
+       private bidderType: BidderType;
+
+       constructor(ah: AuctionHouse, param: ISerializedBidder){
+           this.name = param.bidderName;
            this.ah = ah;
            this.bids = {};
            this.auctions = {};
        }
 
+       public updateStat(param: ISerializedBidder){
+
+       }
        public getId(): string{
            return this.name;
        }

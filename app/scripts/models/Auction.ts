@@ -12,7 +12,7 @@ module Madbid{
     }
 
     export interface ISerializedAuction{
-        id?: number;
+        id: number;
         bids?: Array<ISerializedBid>;
         bidders?: Array<ISerializedBidder>;
         item?: ISerializedItem;
@@ -28,19 +28,22 @@ module Madbid{
         private lastBid: Bid;
         private lastBidder: Bidder;
 
-        private endTime: Date;
+        public endTime: Date;
         public remainingTime: number;
         public currentPrice: number;
         public closed: boolean;
 
+        public persitentBidderNumber: number;
 
-        constructor(ah: AuctionHouse, item: Item){
+        constructor(ah: AuctionHouse, item: Item, param: ISerializedAuction){
             this.ah = ah;
             this.id = item.getId();
             this.item = item;
             this.bidders = {};
             this.bids = {};
             this.closed = false;
+
+            this.updateStat(param);
         }
 
         public updateStat(param: ISerializedAuction){
@@ -54,7 +57,7 @@ module Madbid{
             this.closed = false;
             this.remainingTime = (+this.endTime - +reference) / 1000;
 
-            if (this.remainingTime < 0) this.closed = true;
+            if (this.remainingTime < -2) this.closed = true; //we considere that there is 2 seconds of latency
         }
         public isValid(): boolean{
             return this.item.isValid() && this.hasBid() && !this.closed;

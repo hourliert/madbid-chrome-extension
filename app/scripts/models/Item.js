@@ -6,9 +6,10 @@
 var Madbid;
 (function (Madbid) {
     var Item = (function () {
-        function Item(ah, id) {
+        function Item(ah, param) {
             this.ah = ah;
-            this.id = id;
+            this.id = param.id;
+            this.updateStat(param);
         }
         Item.prototype.getId = function () {
             return this.id;

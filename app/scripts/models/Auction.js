@@ -6,13 +6,14 @@
 var Madbid;
 (function (Madbid) {
     var Auction = (function () {
-        function Auction(ah, item) {
+        function Auction(ah, item, param) {
             this.ah = ah;
             this.id = item.getId();
             this.item = item;
             this.bidders = {};
             this.bids = {};
             this.closed = false;
+            this.updateStat(param);
         }
         Auction.prototype.updateStat = function (param) {
             if (param.endTime)
@@ -26,8 +27,8 @@ var Madbid;
         Auction.prototype.updateEndTime = function (reference) {
             this.closed = false;
             this.remainingTime = (+this.endTime - +reference) / 1000;
-            if (this.remainingTime < 0)
-                this.closed = true;
+            if (this.remainingTime < -2)
+                this.closed = true; //we considere that there is 2 seconds of latency
         };
         Auction.prototype.isValid = function () {
             return this.item.isValid() && this.hasBid() && !this.closed;
