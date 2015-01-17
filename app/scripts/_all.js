@@ -12,4 +12,5 @@
 /// <reference path='services/NetworkService.ts' />
 /// <reference path='filters/BiddingBidderFilter.ts' />
 /// <reference path='directives/AuctionInfoDirective.ts' />
+/// <reference path='directives/BidderInfoDirective.ts' />
 //# sourceMappingURL=_all.js.map

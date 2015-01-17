@@ -31,6 +31,16 @@ var Madbid;
         Auction.prototype.getNumberBids = function () {
             return Object.keys(this.bids).length;
         };
+        Auction.prototype.hasNewBidderSince = function (biddersInCourse) {
+            var i, bidder;
+            for (i in this.bidders) {
+                bidder = this.bidders[i];
+                if (!biddersInCourse[bidder.getId()]) {
+                    return true;
+                }
+            }
+            return false;
+        };
         Auction.prototype.addBid = function (bid) {
             this.bids[bid.getId()] = bid;
             this.lastBid = bid;

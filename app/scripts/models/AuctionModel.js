@@ -73,9 +73,9 @@ var Madbid;
                     bid = bids[b];
                     localBidder = this.singletonBidder(bid.bidderName);
                     localBid = new Madbid.Bid(localAuction, localBidder);
+                    localBid.updateStat(bid);
                     localBidder.addAuction(localAuction);
                     localBidder.addBid(localBid);
-                    localBid.updateStat(bid);
                     localAuction.addBidder(localBidder);
                     localAuction.addBid(localBid);
                 }

@@ -17,6 +17,9 @@ var Madbid;
                 this.date = new Date(param.date);
             this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
         };
+        Bid.prototype.isOn = function (auction) {
+            return auction === this.auction;
+        };
         Bid.prototype.setBidder = function (bidder) {
             this.bidder = bidder;
         };

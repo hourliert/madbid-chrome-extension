@@ -38,6 +38,10 @@ module Madbid{
             this.id = this.auction.getId() + '_' + this.bidder.getId() + '_' + (+this.date);
         }
 
+        public isOn(auction: Auction): boolean{
+            return auction === this.auction;
+        }
+
         public setBidder(bidder: Bidder){
             this.bidder = bidder;
         }

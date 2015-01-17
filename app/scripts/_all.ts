@@ -14,12 +14,16 @@
 /// <reference path='services/NetworkService.ts' />
 /// <reference path='filters/BiddingBidderFilter.ts' />
 /// <reference path='directives/AuctionInfoDirective.ts' />
+/// <reference path='directives/BidderInfoDirective.ts' />
 
 module Madbid{
     export interface ISerializable{
         toJson(): any;
     }
 
+    export interface IStringNumberMap{
+        [index: string]: number;
+    }
 
     export interface IMadbidResponse{
         cmd: string;

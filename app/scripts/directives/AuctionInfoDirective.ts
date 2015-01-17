@@ -5,10 +5,6 @@
 /// <reference path='../_all.ts' />
 
 module Madbid{
-    export interface IGraphBidMad{
-        [index: string]: number;
-    }
-
     export interface IAuctionInfoScope extends ng.IScope{
         ngModel: AuctionHouse;
         auction: Auction;
@@ -128,12 +124,13 @@ module Madbid{
                         series: []
                     },
                     highCharts: HighchartsChartObject,
-                    graphBidIndexes: IGraphBidMad = {};
+                    graphBidIndexes: IStringNumberMap = {};
 
                 function buildSerie(auction: Auction, bidder: Bidder): HighchartsSeriesOptions{
                     var i: any,
                         bid: Bid,
                         ii: number,
+                        newLength: number,
                         serie: HighchartsSeriesOptions = {
                             name: 'Bids',
                             color: 'rgba(119,152,191,0.9)',
@@ -148,12 +145,12 @@ module Madbid{
 
                         if (bidder && bid.bidder !== bidder) continue;
 
-                        serie.data.push({
+                        newLength = serie.data.push({
                             x: bid.date,
                             y: bid.value,
                             name: bid.bidder.getId()
                         });
-                        graphBidIndexes[bid.getId()] = i;
+                        graphBidIndexes[bid.getId()] = newLength- 1;
                     }
 
                     serie.data.sort(function(t1, t2){
@@ -195,14 +192,13 @@ module Madbid{
 
                 $scope.$watch('bidder', function(newVal: Bidder, oldVal: Bidder){
                     if (newVal && newVal !== oldVal){
-                        bidder = <Bidder> $scope.bidder;
+                        bidder = newVal;
 
                         highCharts.destroy();
                         highCharts = new Highcharts.Chart(graphOptions);
                         highCharts.addSeries(buildSerie(auction,bidder), true);
                     }
                 });
-
                 $scope.$watch(function() {
                     return auction.getNumberBids();
                 }, function(newVal: number, oldVal: number){
@@ -210,10 +206,9 @@ module Madbid{
                         updateSerie(auction, bidder, highCharts);
                     }
                 });
-
                 $scope.$watch('auction', function(newVal: Auction, oldVal: Auction){
                     if(newVal && newVal !== oldVal){
-                        auction = <Auction> $scope.auction;
+                        auction = newVal;
 
                         highCharts.destroy();
                         highCharts = new Highcharts.Chart(graphOptions);

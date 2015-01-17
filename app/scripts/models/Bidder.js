@@ -25,6 +25,15 @@ var Madbid;
                 return false;
             }
         };
+        Bidder.prototype.getNumberBidsOn = function (auction) {
+            var cpt = 0, bid, i;
+            for (i in this.bids) {
+                bid = this.bids[i];
+                if (bid.isOn(auction))
+                    cpt++;
+            }
+            return cpt;
+        };
         Bidder.prototype.addAuction = function (auction) {
             this.auctions[auction.getId()] = auction;
         };

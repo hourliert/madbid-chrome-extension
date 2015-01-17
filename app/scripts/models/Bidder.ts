@@ -41,6 +41,18 @@ module Madbid{
            }
        }
 
+       public getNumberBidsOn(auction: Auction): number{
+           var cpt = 0,
+               bid: Bid,
+               i: any;
+
+           for (i in this.bids){
+               bid = this.bids[i];
+               if (bid.isOn(auction)) cpt++;
+           }
+           return cpt;
+       }
+
        public addAuction(auction: Auction){
            this.auctions[auction.getId()] = auction;
        }

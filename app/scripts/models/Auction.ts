@@ -59,6 +59,19 @@ module Madbid{
             return Object.keys(this.bids).length;
         }
 
+        public hasNewBidderSince(biddersInCourse: IBidderMap): boolean{
+            var i: any,
+                bidder: Bidder;
+
+            for (i in this.bidders){
+                bidder = this.bidders[i]
+                if (!biddersInCourse[bidder.getId()]){
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public addBid(bid: Bid){
             this.bids[bid.getId()] = bid;
             this.lastBid = bid;

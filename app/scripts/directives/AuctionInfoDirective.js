@@ -113,7 +113,7 @@ var Madbid;
                     series: []
                 }, highCharts, graphBidIndexes = {};
                 function buildSerie(auction, bidder) {
-                    var i, bid, ii, serie = {
+                    var i, bid, ii, newLength, serie = {
                         name: 'Bids',
                         color: 'rgba(119,152,191,0.9)',
                         data: [],
@@ -125,12 +125,12 @@ var Madbid;
                         bid = auction.bids[i];
                         if (bidder && bid.bidder !== bidder)
                             continue;
-                        serie.data.push({
+                        newLength = serie.data.push({
                             x: bid.date,
                             y: bid.value,
                             name: bid.bidder.getId()
                         });
-                        graphBidIndexes[bid.getId()] = i;
+                        graphBidIndexes[bid.getId()] = newLength - 1;
                     }
                     serie.data.sort(function (t1, t2) {
                         if (t1.x < t2.x) {
@@ -165,7 +165,7 @@ var Madbid;
                 highCharts.addSeries(buildSerie(auction, bidder), true);
                 $scope.$watch('bidder', function (newVal, oldVal) {
                     if (newVal && newVal !== oldVal) {
-                        bidder = $scope.bidder;
+                        bidder = newVal;
                         highCharts.destroy();
                         highCharts = new Highcharts.Chart(graphOptions);
                         highCharts.addSeries(buildSerie(auction, bidder), true);
@@ -180,7 +180,7 @@ var Madbid;
                 });
                 $scope.$watch('auction', function (newVal, oldVal) {
                     if (newVal && newVal !== oldVal) {
-                        auction = $scope.auction;
+                        auction = newVal;
                         highCharts.destroy();
                         highCharts = new Highcharts.Chart(graphOptions);
                         highCharts.addSeries(buildSerie(auction, bidder), true);

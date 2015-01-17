@@ -28,11 +28,7 @@
 
         <auction-info ng-if="ctrl.selection.auction" ng-model="ctrl.model" auction="ctrl.selection.auction" bidder="ctrl.selection.bidder"></auction-info>
 
-
-        <bidder-info ng-if="ctrl.selection.selectedItem"
-                     ng-model="ctrl.model"
-                     auction-id="ctrl.selection.selectedItem"
-                     bidder-name="ctrl.selection.selectedBidder"></bidder-info>
+        <bidder-info ng-if="ctrl.selection.auction" ng-model="ctrl.model" auction="ctrl.selection.auction"></bidder-info>
 
 
 

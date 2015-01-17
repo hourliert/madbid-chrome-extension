@@ -1,10 +1,15 @@
 /**
  * Created by thomashourlier on 12/01/15.
  */
+
 /// <reference path='../_all.ts' />
-var Madbid;
-(function (Madbid) {
-    function BidderInfoDirective() {
+
+module Madbid{
+    export interface IBidderInfoScope extends ng.IScope{
+        ngModel: AuctionHouse;
+        auction: Auction;
+    }
+    export function BidderInfoDirective(): ng.IDirective{
         return {
             restrict: 'E',
             require: '^ngModel',
@@ -12,74 +17,98 @@ var Madbid;
                 ngModel: '=',
                 auction: '='
             },
-            link: function ($scope, $element, $attrs) {
-                var ah = $scope.ngModel, auction = $scope.auction, container, graphOptions = {
-                    chart: {
-                        renderTo: 'container-bidders-info',
-                        type: 'column'
-                    },
-                    title: {
-                        text: 'Bidders for ' + auction.item.name || auction.getId().toString()
-                    },
-                    subtitle: {
-                        text: 'Since last reset / launch'
-                    },
-                    yAxis: {
-                        min: 0,
+            link: function($scope: IBidderInfoScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes){
+                var ah:AuctionHouse = $scope.ngModel,
+                    auction: Auction = $scope.auction,
+                    container: ng.IAugmentedJQuery,
+                    graphOptions: HighchartsOptions = {
+                        chart: {
+                            renderTo: 'container-bidders-info',
+                            type: 'column'
+                        },
                         title: {
-                            text: 'Number of bids'
-                        }
+                            text: 'Bidders for ' + auction.item.name || auction.getId().toString()
+                        },
+                        subtitle: {
+                            text: 'Since last reset / launch'
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: 'Number of bids'
+                            }
+                        },
+                        xAxis: {
+                            type: 'category'
+                        },
+                        tooltip: {
+                            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                            '<td style="padding:0"><b>{point.y}</b></td></tr>',
+                            footerFormat: '</table>',
+                            shared: true,
+                            useHTML: true
+                        },
+                        plotOptions: {
+                            column: {
+                                pointPadding: 0.2,
+                                borderWidth: 0
+                            }
+                        },
+                        series: []
                     },
-                    xAxis: {
-                        type: 'category'
-                    },
-                    tooltip: {
-                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + '<td style="padding:0"><b>{point.y}</b></td></tr>',
-                        footerFormat: '</table>',
-                        shared: true,
-                        useHTML: true
-                    },
-                    plotOptions: {
-                        column: {
-                            pointPadding: 0.2,
-                            borderWidth: 0
-                        }
-                    },
-                    series: []
-                }, highCharts, bidderBidsNumberMap = {}, graphBidderIndexes = {}, graphBidder = {};
-                function buildSerie(auction) {
-                    var i, bidder, nbBids, newLength, serie = {
-                        name: 'Bids',
-                        data: [],
-                        color: 'rgba(119,152,191,0.9)'
-                    };
+                    highCharts: HighchartsChartObject,
+                    bidderBidsNumberMap: IStringNumberMap = {},
+                    graphBidderIndexes: IStringNumberMap = {},
+                    graphBidder: IBidderMap = {};
+
+                function buildSerie(auction: Auction): HighchartsSeriesOptions{
+                    var i: any,
+                        bidder: Bidder,
+                        nbBids: number,
+                        newLength: number,
+                        serie: HighchartsSeriesOptions = {
+                            name: 'Bids',
+                            data: [],
+                            color: 'rgba(119,152,191,0.9)'
+                        };
+
                     graphBidderIndexes = {};
                     graphBidder = {};
                     bidderBidsNumberMap = {};
-                    for (i in ah.bidders) {
+
+                    for (i in ah.bidders){
                         bidder = ah.bidders[i];
-                        if (!bidder.isBiddingOn(auction))
-                            continue;
+
+                        if (!bidder.isBiddingOn(auction)) continue;
+
                         nbBids = bidder.getNumberBidsOn(auction);
+
                         newLength = serie.data.push({
                             name: bidder.getId(),
                             y: nbBids
                         });
+
                         graphBidderIndexes[bidder.getId()] = newLength - 1;
                         graphBidder[bidder.getId()] = bidder;
                         bidderBidsNumberMap[bidder.getId()] = nbBids;
                     }
+
                     return serie;
                 }
-                function updateSerie(auction, chart) {
-                    var i, nbBids, highchartPoint, bidder;
-                    for (i in ah.bidders) {
+                function updateSerie(auction: Auction, chart: HighchartsChartObject){
+                    var i: any,
+                        nbBids: number,
+                        highchartPoint: HighchartsPointObject,
+                        bidder: Bidder;
+
+                    for (i in ah.bidders){
                         bidder = ah.bidders[i];
-                        if (!bidder.isBiddingOn(auction))
-                            continue;
+
+                        if (!bidder.isBiddingOn(auction)) continue;
+
                         nbBids = bidder.getNumberBidsOn(auction);
-                        if (nbBids !== bidderBidsNumberMap[bidder.getId()]) {
+                        if (nbBids !== bidderBidsNumberMap[bidder.getId()]){
                             highchartPoint = highCharts.series[0].points[graphBidderIndexes[bidder.getId()]];
                             highchartPoint.update({
                                 name: bidder.getId(),
@@ -88,38 +117,44 @@ var Madbid;
                         }
                     }
                 }
+
                 container = angular.element('<div id="container-bidders-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');
                 $element.append(container);
+
                 highCharts = new Highcharts.Chart(graphOptions);
                 highCharts.addSeries(buildSerie(auction), true);
-                $scope.$watch(function () {
+
+                $scope.$watch(function(){
                     return auction.getNumberBids();
-                }, function (newVal, oldVal) {
-                    if (newVal && newVal !== oldVal) {
-                        if (auction.hasNewBidderSince(graphBidder)) {
+                }, function(newVal: number, oldVal: number){
+                    if (newVal && newVal !== oldVal){
+                        if (auction.hasNewBidderSince(graphBidder)){
                             highCharts.destroy();
                             highCharts = new Highcharts.Chart(graphOptions);
                             highCharts.addSeries(buildSerie(auction), true);
-                        }
-                        else {
+                        } else {
                             updateSerie(auction, highCharts);
                         }
                     }
                 });
-                $scope.$watch('auction', function (newVal, oldVal) {
-                    if (newVal && newVal !== oldVal) {
+
+                $scope.$watch('auction', function(newVal: Auction, oldVal: Auction){
+                    if (newVal && newVal !== oldVal){
                         auction = newVal;
+
                         highCharts.destroy();
                         highCharts = new Highcharts.Chart(graphOptions);
                         highCharts.addSeries(buildSerie(auction), true);
                     }
                 });
+
             }
         };
     }
-    Madbid.BidderInfoDirective = BidderInfoDirective;
+
     angular.module('madbid.directive').directive('bidderInfo', BidderInfoDirective);
-})(Madbid || (Madbid = {}));
+}
+
 /*
 angular.module('madbid.directive')
   .directive('bidderInfo', function(){
@@ -355,4 +390,3 @@ angular.module('madbid.directive')
       }
     };
   });*/
-//# sourceMappingURL=BidderInfoDirective.js.map
