@@ -5,6 +5,15 @@
 'use strict';
 var Madbid;
 (function (Madbid) {
+    Madbid.shortPeriod = 60;
+    Madbid.longPeriod = 300;
+    Madbid.minAggrBid = 5;
+    Madbid.minPacingBid = 5;
+    Madbid.minTotalBid = 20;
+    Madbid.minBidTime = 2;
+    Madbid.minFollowingBid = 1;
+    Madbid.maxBidTime = 2;
+    Madbid.maxPersistentBidder = 2;
     var AuctionHouse = (function () {
         function AuctionHouse(bidders, items, auctions) {
             this.bidders = bidders;
@@ -39,8 +48,23 @@ var Madbid;
             }
         };
         AuctionHouse.prototype.updateAuctionsEndTime = function (reference) {
-            for (var i in this.auctions) {
+            var i;
+            for (i in this.auctions) {
                 this.auctions[i].updateRemainingTime(reference);
+            }
+        };
+        AuctionHouse.prototype.compute = function (reference) {
+            var i, j, auction, bidder;
+            for (i in this.auctions) {
+                auction = this.auctions[i];
+                auction.updateRemainingTime(reference);
+                auction.detectClosing();
+                for (j in this.bidders) {
+                    bidder = this.bidders[j];
+                    bidder.setBidderType(auction, bidder.detectType(auction));
+                }
+                auction.detectPersistentBidder();
+                auction.detectEndingPatern();
             }
         };
         AuctionHouse.prototype.toJson = function () {

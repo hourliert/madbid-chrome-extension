@@ -8,16 +8,17 @@ var Madbid;
     var models;
     (function (models) {
         var AuctionModel = (function () {
-            function AuctionModel(storage, $interval) {
+            function AuctionModel(storage, $interval, $timeout) {
                 this.storage = storage;
                 this.$interval = $interval;
+                this.$timeout = $timeout;
                 this.ah = new Madbid.AuctionHouse();
                 this.timeReference = new Date();
                 this.restoreData();
                 $interval(angular.bind(this, function () {
                     this.timeReference.setSeconds(this.timeReference.getSeconds() + 1);
-                    this.ah.updateAuctionsEndTime(this.timeReference);
-                    this.ah.detectClosedAuction();
+                    this.ah.compute(this.timeReference); //computation of all data only every seconds.. lot of watcher, I have to preserve angular performances...
+                    this.saveData();
                 }), 1000);
             }
             AuctionModel.prototype.singletonBidder = function (param) {
@@ -165,9 +166,8 @@ var Madbid;
                         localBidder.addAuction(localAuction);
                     }
                 }
-                this.saveData();
             };
-            AuctionModel.$inject = ['storage', '$interval'];
+            AuctionModel.$inject = ['storage', '$interval', '$timeout'];
             return AuctionModel;
         })();
         models.AuctionModel = AuctionModel;

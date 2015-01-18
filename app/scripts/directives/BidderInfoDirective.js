@@ -47,10 +47,12 @@ var Madbid;
                         },
                         plotOptions: {
                             column: {
+                                animation: false,
                                 pointPadding: 0.2,
                                 borderWidth: 0
                             },
                             series: {
+                                animation: false,
                                 events: {
                                     click: function (e) {
                                         $scope.observeBidderSelection({

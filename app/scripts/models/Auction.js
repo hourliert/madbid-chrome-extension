@@ -12,7 +12,9 @@ var Madbid;
             this.item = item;
             this.bidders = {};
             this.bids = {};
+            this.lastBids = [];
             this.closed = false;
+            this.endingPatternDetected = false;
             this.updateStat(param);
         }
         Auction.prototype.getCloseToEndBids = function () {
@@ -45,8 +47,37 @@ var Madbid;
                 this.closed = true;
         };
         Auction.prototype.detectClosing = function () {
-            if (!this.timeout || (+this.lastBid.date + this.timeout * 1000 < +this.endTime))
+            if (!this.timeout || ((+this.lastBid.date + this.timeout * 1000) < +this.endTime))
                 this.closed = true;
+        };
+        Auction.prototype.detectPersistentBidder = function () {
+            var i, bidder;
+            this.persistentBidderNumber = 0;
+            this.pacingBidderNumber = 0;
+            this.aggresiveBidderNumber = 0;
+            for (i in this.bidders) {
+                bidder = this.bidders[i];
+                if (bidder.isAggresive(this))
+                    this.aggresiveBidderNumber++;
+                if (bidder.isPacing(this))
+                    this.pacingBidderNumber++;
+            }
+            this.persistentBidderNumber = this.pacingBidderNumber + this.aggresiveBidderNumber;
+        };
+        Auction.prototype.detectEndingPatern = function () {
+            var i, ii, bid, firstPatternBid, bidSatisfyingPattern = 0;
+            for (i = 0, ii = this.lastBids.length; i < ii; i++) {
+                bid = this.lastBids[i];
+                if (!firstPatternBid) {
+                    if (bid.delayBeforeEnd <= Madbid.minBidTime)
+                        firstPatternBid = bid;
+                }
+                else {
+                    if (bid.delayBeforeEnd >= (this.timeout - Madbid.maxBidTime))
+                        bidSatisfyingPattern++;
+                }
+            }
+            this.endingPatternDetected = (bidSatisfyingPattern >= Madbid.minFollowingBid && this.persistentBidderNumber <= Madbid.maxPersistentBidder);
         };
         Auction.prototype.getId = function () {
             return this.id;
@@ -56,7 +87,7 @@ var Madbid;
             this.remainingTime = (+this.endTime - +reference) / 1000;
             if (this.remainingTime < -2) {
                 this.closed = true;
-            } //we considere that there is 2 seconds of latency
+            }
         };
         Auction.prototype.isValid = function () {
             return this.item.isValid() && this.hasBid() && !this.closed;
@@ -93,6 +124,9 @@ var Madbid;
         Auction.prototype.addBid = function (bid) {
             this.bids[bid.getId()] = bid;
             this.lastBid = bid;
+            this.lastBids.push(bid);
+            if (this.lastBids.length > 10)
+                this.lastBids.shift();
             this.currentPrice = bid.value;
         };
         Auction.prototype.addBidder = function (bidder) {

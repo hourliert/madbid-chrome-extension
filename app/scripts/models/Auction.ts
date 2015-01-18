@@ -10,7 +10,6 @@ module Madbid{
     export interface IAuctionMap{
         [index: number]: Auction;
     }
-
     export interface ISerializedAuction{
         id: number;
         bids?: Array<ISerializedBid>;
@@ -28,6 +27,7 @@ module Madbid{
         public bidders: IBidderMap;
         public bids: IBidMap;
         public lastBid: Bid;
+        public lastBids: Array<Bid>;
         private lastBidder: Bidder;
 
         public previousEndTime: Date;
@@ -37,7 +37,10 @@ module Madbid{
         public closed: boolean;
         public timeout: number;
 
-        public persitentBidderNumber: number;
+        public persistentBidderNumber: number;
+        public pacingBidderNumber: number;
+        public aggresiveBidderNumber: number;
+        public endingPatternDetected: boolean;
 
         constructor(ah: AuctionHouse, item: Item, param: ISerializedAuction){
             this.ah = ah;
@@ -45,7 +48,9 @@ module Madbid{
             this.item = item;
             this.bidders = {};
             this.bids = {};
+            this.lastBids = [];
             this.closed = false;
+            this.endingPatternDetected = false;
 
             this.updateStat(param);
         }
@@ -85,7 +90,40 @@ module Madbid{
             if (+new Date() - +this.endTime > 0) this.closed = true;
         }
         public detectClosing(){
-            if (!this.timeout || (+this.lastBid.date + this.timeout*1000 < +this.endTime)) this.closed = true;
+            if (!this.timeout || ((+this.lastBid.date + this.timeout*1000) < +this.endTime)) this.closed = true;
+        }
+        public detectPersistentBidder(){
+            var i: any,
+                bidder: Bidder;
+
+            this.persistentBidderNumber = 0;
+            this.pacingBidderNumber = 0;
+            this.aggresiveBidderNumber = 0;
+
+            for (i in this.bidders){
+                bidder = this.bidders[i];
+                if (bidder.isAggresive(this)) this.aggresiveBidderNumber++;
+                if (bidder.isPacing(this)) this.pacingBidderNumber++;
+            }
+            this.persistentBidderNumber = this.pacingBidderNumber + this.aggresiveBidderNumber;
+        }
+        public detectEndingPatern(){
+            var i: number,
+                ii: number,
+                bid: Bid,
+                firstPatternBid: Bid,
+                bidSatisfyingPattern: number = 0;
+
+            for (i = 0, ii = this.lastBids.length; i < ii; i++){
+                bid = this.lastBids[i];
+
+                if (!firstPatternBid){
+                    if (bid.delayBeforeEnd <= minBidTime) firstPatternBid = bid;
+                } else {
+                    if (bid.delayBeforeEnd >= (this.timeout - maxBidTime)) bidSatisfyingPattern++;
+                }
+            }
+            this.endingPatternDetected = (bidSatisfyingPattern >= minFollowingBid && this.persistentBidderNumber <= maxPersistentBidder);
         }
         public getId(): number{
             return this.id;
@@ -95,7 +133,7 @@ module Madbid{
             this.remainingTime = (+this.endTime - +reference) / 1000;
             if (this.remainingTime < -2) {
                 this.closed = true;
-            } //we considere that there is 2 seconds of latency
+            }
         }
         public isValid(): boolean{
             return this.item.isValid() && this.hasBid() && !this.closed;
@@ -135,7 +173,11 @@ module Madbid{
         }
         public addBid(bid: Bid){
             this.bids[bid.getId()] = bid;
+
             this.lastBid = bid;
+            this.lastBids.push(bid);
+            if (this.lastBids.length > 10) this.lastBids.shift();
+
             this.currentPrice = bid.value;
         }
         public addBidder(bidder: Bidder){

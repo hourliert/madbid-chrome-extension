@@ -21,9 +21,8 @@ var Madbid;
                 };
                 this.model = auctionModel.getModel();
                 networkService.addListener(function (res) {
-                    $scope.$apply(function () {
-                        auctionModel.handleUpdate(res);
-                    });
+                    auctionModel.handleUpdate(res);
+                    $scope.$apply();
                 });
                 $interval(angular.bind(this, function () {
                     this.time = new Date();

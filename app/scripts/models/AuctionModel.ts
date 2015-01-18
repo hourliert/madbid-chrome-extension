@@ -8,14 +8,15 @@
 
 module Madbid.models {
     export class AuctionModel{
-        public static $inject = ['storage', '$interval'];
+        public static $inject = ['storage', '$interval', '$timeout'];
 
         private ah: AuctionHouse;
         public timeReference: Date;
 
         constructor(
             private storage: ng.localStorage.ILocalStorageService,
-            private $interval: ng.IIntervalService
+            private $interval: ng.IIntervalService,
+            private $timeout: ng.ITimeoutService
         ){
             this.ah = new AuctionHouse();
             this.timeReference = new Date();
@@ -24,8 +25,8 @@ module Madbid.models {
 
             $interval(angular.bind(this, function(){
                 this.timeReference.setSeconds(this.timeReference.getSeconds() + 1);
-                this.ah.updateAuctionsEndTime(this.timeReference);
-                this.ah.detectClosedAuction();
+                this.ah.compute(this.timeReference); //computation of all data only every seconds.. lot of watcher, I have to preserve angular performances...
+                this.saveData();
             }), 1000);
         }
 
@@ -228,8 +229,6 @@ module Madbid.models {
                     localBidder.addAuction(localAuction);
                 }
             }
-
-            this.saveData();
         }
     }
 

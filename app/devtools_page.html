@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-csp ng-app="madbid">
+<html ng-csp ng-cloak ng-app="madbid">
     <head>
     </head>
     <body ng-controller="AuctionController as ctrl">
@@ -23,26 +23,30 @@
         <h2>{{ctrl.time | date:'H:mm:ss'}}</h2>
 
 
-        <h3 ng-if="ctrl.selection.auction">{{ctrl.selection.auction.remainingTime}} seconds remain</h3>
-        <h3 ng-if="ctrl.selection.auction">{{ctrl.selection.auction.currentPrice}} euros</h3>
+        <div ng-if="ctrl.selection.auction">
 
-        <auction-info ng-if="ctrl.selection.auction"
-                      ng-model="ctrl.model"
+            <h3>{{ctrl.selection.auction.remainingTime}} seconds remain</h3>
+            <h3>{{ctrl.selection.auction.currentPrice}} euros</h3>
+            <h3 ng-if="ctrl.selection.auction.endingPatternDetected">Ending Pattern detected !!!</h3>
+            <h4>{{ctrl.selection.auction.pacingBidderNumber}} pacing bidders</h4>
+            <h4>{{ctrl.selection.auction.aggresiveBidderNumber}} aggresive bidders</h4>
+            <h4>{{ctrl.selection.auction.persistentBidderNumber}} active bidders</h4>
+
+            <auction-info ng-model="ctrl.model"
+                          auction="ctrl.selection.auction"
+                          bidder="ctrl.selection.bidder"
+                          time-selection="ctrl.timeSelection"></auction-info>
+
+            <bidder-info ng-model="ctrl.model"
+                         auction="ctrl.selection.auction"
+                         time-selection="ctrl.timeSelection"
+                         observe-bidder-selection="ctrl.observeBidderSelection(bidderName)"></bidder-info>
+
+            <bid-info ng-model="ctrl.model"
                       auction="ctrl.selection.auction"
                       bidder="ctrl.selection.bidder"
-                      time-selection="ctrl.timeSelection"></auction-info>
-
-        <bidder-info ng-if="ctrl.selection.auction"
-                     ng-model="ctrl.model"
-                     auction="ctrl.selection.auction"
-                     time-selection="ctrl.timeSelection"
-                     observe-bidder-selection="ctrl.observeBidderSelection(bidderName)"></bidder-info>
-
-        <bid-info ng-if="ctrl.selection.auction"
-                  ng-model="ctrl.model"
-                  auction="ctrl.selection.auction"
-                  bidder="ctrl.selection.bidder"
-                  time-selection="ctrl.timeSelection"></bid-info>
+                      time-selection="ctrl.timeSelection"></bid-info>
+        </div>
 
 
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
