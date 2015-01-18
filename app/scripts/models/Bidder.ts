@@ -77,8 +77,8 @@ module Madbid {
                 if ((+bid.date + longPeriod * 1000) > +now) nbLongBid++;
             }
 
-            if (nbShortBid > minAggrBid) return BidderType.Aggressive;
-            if (nbShortBid > 1 && nbLongBid > minPacingBid && nbTotalBid > minTotalBid) return BidderType.Pacing;
+            if (nbShortBid >= minAggrBid) return BidderType.Aggressive;
+            if (nbShortBid >= 1 && nbLongBid >= minPacingBid && nbTotalBid >= minTotalBid) return BidderType.Pacing;
         }
         public updateStat(param: ISerializedBidder){
 

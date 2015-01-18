@@ -47,9 +47,9 @@ var Madbid;
                 if ((+bid.date + Madbid.longPeriod * 1000) > +now)
                     nbLongBid++;
             }
-            if (nbShortBid > Madbid.minAggrBid)
+            if (nbShortBid >= Madbid.minAggrBid)
                 return 0 /* Aggressive */;
-            if (nbShortBid > 1 && nbLongBid > Madbid.minPacingBid && nbTotalBid > Madbid.minTotalBid)
+            if (nbShortBid >= 1 && nbLongBid >= Madbid.minPacingBid && nbTotalBid >= Madbid.minTotalBid)
                 return 1 /* Pacing */;
         };
         Bidder.prototype.updateStat = function (param) {

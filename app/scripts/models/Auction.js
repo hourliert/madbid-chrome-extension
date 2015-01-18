@@ -47,7 +47,7 @@ var Madbid;
                 this.closed = true;
         };
         Auction.prototype.detectClosing = function () {
-            if (!this.timeout || ((+this.lastBid.date + this.timeout * 1000) < +this.endTime))
+            if (!this.timeout || ((+this.lastBid.date + this.timeout * 1000) > +this.endTime))
                 this.closed = true;
         };
         Auction.prototype.detectPersistentBidder = function () {
@@ -77,7 +77,7 @@ var Madbid;
                         bidSatisfyingPattern++;
                 }
             }
-            this.endingPatternDetected = (bidSatisfyingPattern >= Madbid.minFollowingBid && this.persistentBidderNumber <= Madbid.maxPersistentBidder);
+            this.endingPatternDetected = (bidSatisfyingPattern >= Madbid.minFollowingBid && 0 < this.persistentBidderNumber && this.persistentBidderNumber <= Madbid.maxPersistentBidder);
         };
         Auction.prototype.getId = function () {
             return this.id;

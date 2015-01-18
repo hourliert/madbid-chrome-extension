@@ -90,7 +90,7 @@ module Madbid{
             if (+new Date() - +this.endTime > 0) this.closed = true;
         }
         public detectClosing(){
-            if (!this.timeout || ((+this.lastBid.date + this.timeout*1000) < +this.endTime)) this.closed = true;
+            if (!this.timeout || ((+this.lastBid.date + this.timeout*1000) > +this.endTime)) this.closed = true;
         }
         public detectPersistentBidder(){
             var i: any,
@@ -123,7 +123,7 @@ module Madbid{
                     if (bid.delayBeforeEnd >= (this.timeout - maxBidTime)) bidSatisfyingPattern++;
                 }
             }
-            this.endingPatternDetected = (bidSatisfyingPattern >= minFollowingBid && this.persistentBidderNumber <= maxPersistentBidder);
+            this.endingPatternDetected = (bidSatisfyingPattern >= minFollowingBid && 0 < this.persistentBidderNumber && this.persistentBidderNumber <= maxPersistentBidder);
         }
         public getId(): number{
             return this.id;
