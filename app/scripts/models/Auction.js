@@ -15,20 +15,48 @@ var Madbid;
             this.closed = false;
             this.updateStat(param);
         }
+        Auction.prototype.getCloseToEndBids = function () {
+            var obj = {}, i, bid;
+            for (i in this.bids) {
+                bid = this.bids[i];
+                if (bid.delayBeforeEnd <= 2) {
+                    obj[bid.getId()] = bid;
+                }
+            }
+            return obj;
+        };
         Auction.prototype.updateStat = function (param) {
-            if (param.endTime)
-                this.endTime = new Date(param.endTime);
+            var newTime;
+            if (param.endTime) {
+                newTime = new Date(param.endTime);
+                if (+newTime !== +this.endTime) {
+                    this.previousEndTime = this.endTime;
+                }
+                this.endTime = newTime;
+            }
+            if (param.timeout) {
+                this.timeout = param.timeout;
+            }
             if (+new Date() - +this.endTime > 0)
                 this.closed = true;
+        };
+        Auction.prototype.detectClosing = function () {
+            if (!this.timeout) {
+                this.closed = true;
+            }
+            else if (+this.lastBid.date + this.timeout * 1000 < +this.endTime) {
+                this.closed = true;
+            }
         };
         Auction.prototype.getId = function () {
             return this.id;
         };
-        Auction.prototype.updateEndTime = function (reference) {
+        Auction.prototype.updateRemainingTime = function (reference) {
             this.closed = false;
             this.remainingTime = (+this.endTime - +reference) / 1000;
-            if (this.remainingTime < -2)
-                this.closed = true; //we considere that there is 2 seconds of latency
+            if (this.remainingTime < -2) {
+                this.closed = true;
+            } //we considere that there is 2 seconds of latency
         };
         Auction.prototype.isValid = function () {
             return this.item.isValid() && this.hasBid() && !this.closed;
@@ -74,7 +102,8 @@ var Madbid;
                 bids: bids,
                 bidders: bidders,
                 item: item,
-                endTime: this.endTime.toISOString()
+                endTime: (this.endTime) ? this.endTime.toISOString() : '',
+                timeout: this.timeout
             };
             return obj;
         };

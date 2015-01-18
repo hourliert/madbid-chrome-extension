@@ -17,6 +17,7 @@ module Madbid{
         bidders?: Array<ISerializedBidder>;
         item?: ISerializedItem;
         endTime?: string;
+        timeout: number;
     }
 
     export class Auction implements ISerializable{
@@ -25,13 +26,15 @@ module Madbid{
         public item: Item;
         public bidders: IBidderMap;
         public bids: IBidMap;
-        private lastBid: Bid;
+        public lastBid: Bid;
         private lastBidder: Bidder;
 
+        public previousEndTime: Date;
         public endTime: Date;
         public remainingTime: number;
         public currentPrice: number;
         public closed: boolean;
+        private timeout: number;
 
         public persitentBidderNumber: number;
 
@@ -46,18 +49,53 @@ module Madbid{
             this.updateStat(param);
         }
 
+        public getCloseToEndBids(): IBidMap{
+            var obj: IBidMap = {},
+                i: any,
+                bid: Bid;
+
+            for(i in this.bids){
+                bid = this.bids[i];
+                if (bid.delayBeforeEnd <= 2){ //bid between 0 and 2 seconds)
+                    obj[bid.getId()] = bid;
+                }
+            }
+
+            return obj;
+        }
         public updateStat(param: ISerializedAuction){
-            if (param.endTime) this.endTime = new Date(param.endTime);
+            var newTime: Date;
+
+            if (param.endTime){
+                newTime = new Date(param.endTime);
+
+                if (+newTime !== +this.endTime){
+                    this.previousEndTime = this.endTime;
+                }
+                this.endTime = newTime;
+            }
+            if (param.timeout){
+                this.timeout = param.timeout;
+            }
+
             if (+new Date() - +this.endTime > 0) this.closed = true;
+        }
+        public detectClosing(){
+            if (!this.timeout){
+                this.closed = true;
+            } else if (+this.lastBid.date + this.timeout*1000 < +this.endTime){
+                this.closed = true;
+            }
         }
         public getId(): number{
             return this.id;
         }
-        public updateEndTime(reference: Date){
+        public updateRemainingTime(reference: Date){
             this.closed = false;
             this.remainingTime = (+this.endTime - +reference) / 1000;
-
-            if (this.remainingTime < -2) this.closed = true; //we considere that there is 2 seconds of latency
+            if (this.remainingTime < -2) {
+                this.closed = true;
+            } //we considere that there is 2 seconds of latency
         }
         public isValid(): boolean{
             return this.item.isValid() && this.hasBid() && !this.closed;
@@ -112,7 +150,8 @@ module Madbid{
                 bids: bids,
                 bidders: bidders,
                 item: item,
-                endTime: this.endTime.toISOString()
+                endTime: (this.endTime) ? this.endTime.toISOString() :'',
+                timeout: this.timeout
             };
 
             return obj;

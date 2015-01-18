@@ -41,9 +41,17 @@ module Madbid {
             return this.items[id];
         }
 
+        public detectClosedAuction(){
+            var i: any;
+
+            for (i in this.auctions){
+                this.auctions[i].detectClosing();
+            }
+        }
+
         public updateAuctionsEndTime(reference: Date){
             for (var i in this.auctions){
-                this.auctions[i].updateEndTime(reference);
+                this.auctions[i].updateRemainingTime(reference);
             }
         }
 

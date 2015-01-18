@@ -32,9 +32,15 @@ var Madbid;
         AuctionHouse.prototype.getItem = function (id) {
             return this.items[id];
         };
+        AuctionHouse.prototype.detectClosedAuction = function () {
+            var i;
+            for (i in this.auctions) {
+                this.auctions[i].detectClosing();
+            }
+        };
         AuctionHouse.prototype.updateAuctionsEndTime = function (reference) {
             for (var i in this.auctions) {
-                this.auctions[i].updateEndTime(reference);
+                this.auctions[i].updateRemainingTime(reference);
             }
         };
         AuctionHouse.prototype.toJson = function () {

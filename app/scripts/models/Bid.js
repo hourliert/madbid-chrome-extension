@@ -17,7 +17,14 @@ var Madbid;
                 this.value = param.value;
             if (param.date)
                 this.date = new Date(param.date);
-            this.delayBeforeEnd = (+this.auction.endTime - +this.date) / 1000;
+            if (param.delayBeforeEnd) {
+                this.delayBeforeEnd = param.delayBeforeEnd;
+            }
+            else {
+                if (this.auction.previousEndTime) {
+                    this.delayBeforeEnd = (+this.auction.previousEndTime - +this.date) / 1000;
+                }
+            }
         };
         Bid.prototype.isOn = function (auction) {
             return auction === this.auction;
@@ -52,7 +59,8 @@ var Madbid;
                 bidderName: this.bidder.getId(),
                 value: this.value,
                 date: this.date.toISOString(),
-                delta: this.delta
+                delta: this.delta,
+                delayBeforeEnd: this.delayBeforeEnd
             };
             return obj;
         };

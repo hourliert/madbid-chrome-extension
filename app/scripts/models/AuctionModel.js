@@ -17,6 +17,7 @@ var Madbid;
                 $interval(angular.bind(this, function () {
                     this.timeReference.setSeconds(this.timeReference.getSeconds() + 1);
                     this.ah.updateAuctionsEndTime(this.timeReference);
+                    this.ah.detectClosedAuction();
                 }), 1000);
             }
             AuctionModel.prototype.singletonBidder = function (param) {
@@ -96,14 +97,17 @@ var Madbid;
                 this.ah = new Madbid.AuctionHouse();
             };
             AuctionModel.prototype.handleUpdate = function (json) {
-                var response, localItem, localBidder, localAuction, localBid, bidParam, auctionParam, itemParam, i, ii, auction, item;
+                var response, localItem, localBidder, localAuction, localBid, bidParam, auctionParam, itemParam, i, ii, auction, limitDate, item;
                 if (json.cmd === "/update") {
                     response = json.response;
                     this.timeReference = new Date(response.reference.timestamp);
+                    limitDate = new Date(response.reference.timestamp);
+                    limitDate.setMonth(limitDate.getMonth() - 1);
                     for (i = 0, ii = response.items.length; i < ii; i++) {
                         auction = response.items[i];
                         try {
-                            if (!auction.auction_id || !auction.highest_bid || !auction.highest_bidder || !auction.date_bid)
+                            //validation of madbid response... lot of shitty bug in their responses...
+                            if (!auction.auction_id || !auction.highest_bid || !auction.highest_bidder || !auction.date_bid || auction.state !== 3 || new Date(auction.date_bid) < limitDate)
                                 throw 'Incorrect Auction';
                             bidParam = {
                                 value: auction.highest_bid,
@@ -111,7 +115,8 @@ var Madbid;
                             };
                             auctionParam = {
                                 id: auction.auction_id,
-                                endTime: auction.date_timeout
+                                endTime: auction.date_timeout,
+                                timeout: auction.timeout
                             };
                         }
                         catch (e) {
@@ -144,11 +149,6 @@ var Madbid;
                                 buyNowPrice: (item.buynow_data) ? item.buynow_data.base_price : null,
                                 retailPrice: item.rrp
                             };
-                            bidParam = {
-                                bidderName: item.auction_data.last_bid.highest_bidder,
-                                value: item.auction_data.last_bid.highest_bid,
-                                date: item.auction_data.last_bid.date_bid
-                            };
                             auctionParam = {
                                 id: item.auction_id,
                                 endTime: item.auction_data.last_bid.date_timeout
@@ -160,11 +160,8 @@ var Madbid;
                         localItem = this.singletonItem(itemParam);
                         localAuction = this.singletonAuction(localItem, auctionParam);
                         localBidder = this.singletonBidder({ bidderName: item.auction_data.last_bid.highest_bidder });
-                        localBid = new Madbid.Bid(localAuction, localBidder, bidParam);
                         localItem.setAuction(localAuction);
                         localAuction.addBidder(localBidder);
-                        localAuction.addBid(localBid);
-                        localBidder.addBid(localBid);
                         localBidder.addAuction(localAuction);
                     }
                 }

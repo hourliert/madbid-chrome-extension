@@ -6,7 +6,7 @@
 
 'use strict';
 
-module Madbid{
+module Madbid {
     export interface IBidMap{
         [index: string]: Bid;
     }
@@ -16,6 +16,7 @@ module Madbid{
         date?: string;
         bidderName?: string;
         delta?: number;
+        delayBeforeEnd?: number;
     }
 
     export class Bid implements ISerializable{
@@ -39,8 +40,13 @@ module Madbid{
         public updateStat(param: ISerializedBid){
             if (param.value) this.value = param.value;
             if (param.date) this.date = new Date(param.date);
-
-            this.delayBeforeEnd = (+this.auction.endTime - +this.date) / 1000;
+            if (param.delayBeforeEnd){
+                this.delayBeforeEnd = param.delayBeforeEnd;
+            } else {
+                if (this.auction.previousEndTime){
+                    this.delayBeforeEnd = (+this.auction.previousEndTime - +this.date) / 1000;
+                }
+            }
         }
 
         public isOn(auction: Auction): boolean{
@@ -79,7 +85,8 @@ module Madbid{
                 bidderName: this.bidder.getId(),
                 value: this.value,
                 date: this.date.toISOString(),
-                delta: this.delta
+                delta: this.delta,
+                delayBeforeEnd: this.delayBeforeEnd
             };
 
             return obj;
