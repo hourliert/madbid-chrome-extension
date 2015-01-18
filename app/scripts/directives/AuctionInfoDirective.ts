@@ -252,7 +252,7 @@ module Madbid.directives {
                     }
                 });
                 $scope.$watch('auction', function(newVal: Auction, oldVal: Auction){
-                    if(newVal && newVal !== oldVal){
+                    if(newVal !== oldVal){
                         auction = newVal;
 
                         highCharts.destroy();

@@ -33,20 +33,20 @@ var Madbid;
                     this.previousEndTime = this.endTime;
                 }
                 this.endTime = newTime;
+                if (!this.previousEndTime) {
+                    this.previousEndTime = this.endTime;
+                }
             }
-            if (param.timeout) {
+            if (param.timeout)
                 this.timeout = param.timeout;
-            }
+            if (param.closed)
+                this.closed = param.closed;
             if (+new Date() - +this.endTime > 0)
                 this.closed = true;
         };
         Auction.prototype.detectClosing = function () {
-            if (!this.timeout) {
+            if (!this.timeout || (+this.lastBid.date + this.timeout * 1000 < +this.endTime))
                 this.closed = true;
-            }
-            else if (+this.lastBid.date + this.timeout * 1000 < +this.endTime) {
-                this.closed = true;
-            }
         };
         Auction.prototype.getId = function () {
             return this.id;
@@ -67,15 +67,26 @@ var Madbid;
         Auction.prototype.getNumberBids = function () {
             return Object.keys(this.bids).length;
         };
-        Auction.prototype.hasNewBidderOnSince = function (biddersInCourse, auction, date1, date2) {
+        Auction.prototype.hasNewBidderOnSince = function (biddersInCourse, date1, date2) {
             var i, bidder;
             for (i in this.bidders) {
                 bidder = this.bidders[i];
-                if (!bidder.hasBidOnBetween(auction, date1, date2))
+                if (!bidder.hasBidOnBetween(this, date1, date2))
                     continue;
                 if (!biddersInCourse[bidder.getId()]) {
                     return true;
                 }
+            }
+            return false;
+        };
+        Auction.prototype.hasNewBidTimeSinceFor = function (bidTime, bidder, dateMin, dateMax) {
+            var i, bid;
+            for (i in this.bids) {
+                bid = this.bids[i];
+                if (bid.delayBeforeEnd < 0 || bid.delayBeforeEnd > this.timeout || (bidder && bid.bidder !== bidder) || !bid.isBetween(dateMin, dateMax))
+                    continue;
+                if (!bidTime[bid.delayBeforeEnd])
+                    return true;
             }
             return false;
         };
@@ -103,7 +114,8 @@ var Madbid;
                 bidders: bidders,
                 item: item,
                 endTime: (this.endTime) ? this.endTime.toISOString() : '',
-                timeout: this.timeout
+                timeout: this.timeout,
+                closed: this.closed
             };
             return obj;
         };

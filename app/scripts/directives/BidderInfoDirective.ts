@@ -156,7 +156,7 @@ module Madbid.directives {
                     return auction.getNumberBids();
                 }, function(newVal: number, oldVal: number){
                     if (newVal && newVal !== oldVal){
-                        if (auction.hasNewBidderOnSince(graphBidder, auction, timeSelection.dateMin, timeSelection.dateMax)){
+                        if (auction.hasNewBidderOnSince(graphBidder, timeSelection.dateMin, timeSelection.dateMax)){
                             highCharts.destroy();
                             highCharts = new Highcharts.Chart(graphOptions);
                             highCharts.addSeries(buildSerie(auction, timeSelection), true);
@@ -166,12 +166,16 @@ module Madbid.directives {
                     }
                 });
                 $scope.$watch('auction', function(newVal: Auction, oldVal: Auction){
-                    if (newVal && newVal !== oldVal){
+                    if (newVal !== oldVal){
                         auction = newVal;
 
                         highCharts.destroy();
                         highCharts = new Highcharts.Chart(graphOptions);
                         highCharts.addSeries(buildSerie(auction, timeSelection), true);
+
+                        highCharts.setTitle({
+                            text: 'Bidders for ' + auction.item.name || auction.getId().toString()
+                        });
                     }
                 });
             }

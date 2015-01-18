@@ -15,6 +15,7 @@
 /// <reference path='filters/BiddingBidderFilter.ts' />
 /// <reference path='directives/AuctionInfoDirective.ts' />
 /// <reference path='directives/BidderInfoDirective.ts' />
+/// <reference path='directives/BidInfoDirective.ts' />
 /// <reference path='app.ts' />
 
 module Madbid{

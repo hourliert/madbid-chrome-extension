@@ -165,7 +165,6 @@ var Madbid;
                         localBidder.addAuction(localAuction);
                     }
                 }
-                //console.log(this.ah);
                 this.saveData();
             };
             AuctionModel.$inject = ['storage', '$interval'];

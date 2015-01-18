@@ -38,6 +38,12 @@
                      time-selection="ctrl.timeSelection"
                      observe-bidder-selection="ctrl.observeBidderSelection(bidderName)"></bidder-info>
 
+        <bid-info ng-if="ctrl.selection.auction"
+                  ng-model="ctrl.model"
+                  auction="ctrl.selection.auction"
+                  bidder="ctrl.selection.bidder"
+                  time-selection="ctrl.timeSelection"></bid-info>
+
 
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script src="bower_components/angular/angular.min.js"></script>
@@ -52,6 +58,7 @@
         <script src="scripts/services/NetworkService.js"></script>
         <script src="scripts/directives/AuctionInfoDirective.js"></script>
         <script src="scripts/directives/BidderInfoDirective.js"></script>
+        <script src="scripts/directives/BidInfoDirective.js"></script>
         <script src="scripts/filters/ValidAuctionFilter.js"></script>
         <script src="scripts/filters/BiddingBidderFilter.js"></script>
 

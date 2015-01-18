@@ -17,7 +17,8 @@ module Madbid{
         bidders?: Array<ISerializedBidder>;
         item?: ISerializedItem;
         endTime?: string;
-        timeout: number;
+        timeout?: number;
+        closed?: boolean;
     }
 
     export class Auction implements ISerializable{
@@ -34,7 +35,7 @@ module Madbid{
         public remainingTime: number;
         public currentPrice: number;
         public closed: boolean;
-        private timeout: number;
+        public timeout: number;
 
         public persitentBidderNumber: number;
 
@@ -73,19 +74,18 @@ module Madbid{
                     this.previousEndTime = this.endTime;
                 }
                 this.endTime = newTime;
+
+                if (!this.previousEndTime){
+                    this.previousEndTime = this.endTime;
+                }
             }
-            if (param.timeout){
-                this.timeout = param.timeout;
-            }
+            if (param.timeout) this.timeout = param.timeout;
+            if (param.closed) this.closed = param.closed;
 
             if (+new Date() - +this.endTime > 0) this.closed = true;
         }
         public detectClosing(){
-            if (!this.timeout){
-                this.closed = true;
-            } else if (+this.lastBid.date + this.timeout*1000 < +this.endTime){
-                this.closed = true;
-            }
+            if (!this.timeout || (+this.lastBid.date + this.timeout*1000 < +this.endTime)) this.closed = true;
         }
         public getId(): number{
             return this.id;
@@ -106,18 +106,30 @@ module Madbid{
         public getNumberBids(): number{
             return Object.keys(this.bids).length;
         }
-        public hasNewBidderOnSince(biddersInCourse: IBidderMap, auction: Auction, date1?: Date, date2?: Date): boolean{
+        public hasNewBidderOnSince(biddersInCourse: IBidderMap, date1?: Date, date2?: Date): boolean{
             var i: any,
                 bidder: Bidder;
 
             for (i in this.bidders){
                 bidder = this.bidders[i];
 
-                if (!bidder.hasBidOnBetween(auction, date1, date2)) continue;
+                if (!bidder.hasBidOnBetween(this, date1, date2)) continue;
 
                 if (!biddersInCourse[bidder.getId()]){
                     return true;
                 }
+            }
+            return false;
+        }
+        public hasNewBidTimeSinceFor(bidTime: any, bidder: Bidder, dateMin: Date, dateMax: Date): boolean{
+            var i: any,
+                bid: Bid;
+
+            for (i in this.bids){
+                bid = this.bids[i];
+                if (bid.delayBeforeEnd < 0 || bid.delayBeforeEnd > this.timeout || (bidder && bid.bidder !== bidder) || !bid.isBetween(dateMin, dateMax)) continue;
+
+                if (!bidTime[bid.delayBeforeEnd]) return true;
             }
             return false;
         }
@@ -151,7 +163,8 @@ module Madbid{
                 bidders: bidders,
                 item: item,
                 endTime: (this.endTime) ? this.endTime.toISOString() :'',
-                timeout: this.timeout
+                timeout: this.timeout,
+                closed: this.closed
             };
 
             return obj;

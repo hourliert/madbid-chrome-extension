@@ -19,6 +19,7 @@ module Madbid.models {
         ){
             this.ah = new AuctionHouse();
             this.timeReference = new Date();
+
             this.restoreData();
 
             $interval(angular.bind(this, function(){
@@ -228,7 +229,6 @@ module Madbid.models {
                 }
             }
 
-            //console.log(this.ah);
             this.saveData();
         }
     }

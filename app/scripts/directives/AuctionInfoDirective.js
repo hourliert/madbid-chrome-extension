@@ -216,7 +216,7 @@ var Madbid;
                         }
                     });
                     $scope.$watch('auction', function (newVal, oldVal) {
-                        if (newVal && newVal !== oldVal) {
+                        if (newVal !== oldVal) {
                             auction = newVal;
                             highCharts.destroy();
                             highCharts = new Highcharts.Chart(graphOptions);
