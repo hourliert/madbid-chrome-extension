@@ -13,6 +13,9 @@ module Madbid {
     export interface IAuctionBidMap{
         [index: number]: IBidMap;
     }
+    export interface IAuctionLastBidMap{
+        [index: number]: Bid;
+    }
     export interface ISerializedBidder{
         bidderName: string;
     }
@@ -32,6 +35,7 @@ module Madbid {
         private auctions: IAuctionMap;
         private bidsByAuction: IAuctionBidMap;
         private bidderTypeByAuction: IAuctionBidderTypeMap;
+        private lastBidByAuction: IAuctionLastBidMap;
 
         constructor(ah: AuctionHouse, param: ISerializedBidder){
             this.name = param.bidderName;
@@ -40,6 +44,7 @@ module Madbid {
             this.auctions = {};
             this.bidsByAuction = {};
             this.bidderTypeByAuction = {};
+            this.lastBidByAuction = {};
         }
 
         public setBidderType(auction: Auction, type: BidderType){
@@ -93,6 +98,7 @@ module Madbid {
                 this.bidsByAuction[bid.auction.getId()] = {};
             }
             this.bidsByAuction[bid.auction.getId()][bid.getId()] = bid;
+            this.lastBidByAuction[bid.auction.getId()] = bid;
         }
         public hasBidOn(auction: Auction): boolean{
             if (this.auctions[auction.getId()]){
@@ -103,7 +109,9 @@ module Madbid {
         }
         public hasBidOnBetween(auction:Auction, date1: Date, date2: Date): boolean{
             var i: any,
-                bid: Bid;
+                bid: Bid = this.lastBidByAuction[auction.getId()];
+
+            if (bid && bid.isBetween(date1, date2)) return true;
 
             for (i in this.bids){
                 bid = this.bids[i];

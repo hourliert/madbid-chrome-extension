@@ -19,6 +19,7 @@ var Madbid;
             this.auctions = {};
             this.bidsByAuction = {};
             this.bidderTypeByAuction = {};
+            this.lastBidByAuction = {};
         }
         Bidder.prototype.setBidderType = function (auction, type) {
             this.bidderTypeByAuction[auction.getId()] = type;
@@ -63,6 +64,7 @@ var Madbid;
                 this.bidsByAuction[bid.auction.getId()] = {};
             }
             this.bidsByAuction[bid.auction.getId()][bid.getId()] = bid;
+            this.lastBidByAuction[bid.auction.getId()] = bid;
         };
         Bidder.prototype.hasBidOn = function (auction) {
             if (this.auctions[auction.getId()]) {
@@ -73,7 +75,9 @@ var Madbid;
             }
         };
         Bidder.prototype.hasBidOnBetween = function (auction, date1, date2) {
-            var i, bid;
+            var i, bid = this.lastBidByAuction[auction.getId()];
+            if (bid && bid.isBetween(date1, date2))
+                return true;
             for (i in this.bids) {
                 bid = this.bids[i];
                 if (bid.isOn(auction) && bid.isBetween(date1, date2))
