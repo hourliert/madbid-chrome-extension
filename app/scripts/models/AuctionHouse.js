@@ -8,11 +8,11 @@ var Madbid;
     Madbid.shortPeriod = 60;
     Madbid.longPeriod = 300;
     Madbid.minAggrBid = 5;
-    Madbid.minPacingBid = 5;
+    Madbid.minPacingBid = 6;
     Madbid.minTotalBid = 20;
-    Madbid.minBidTime = 2;
-    Madbid.minFollowingBid = 1;
-    Madbid.maxBidTime = 2;
+    Madbid.minBidTime = 0.4; //percent of auction timeout
+    Madbid.minFollowingBid = 2;
+    Madbid.maxBidTime = 0.6; //percent of auction timeout
     Madbid.maxPersistentBidder = 2;
     var AuctionHouse = (function () {
         function AuctionHouse(bidders, items, auctions) {

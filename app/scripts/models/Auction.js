@@ -69,11 +69,11 @@ var Madbid;
             for (i = (this.bidsArray.length < 10) ? 0 : this.bidsArray.length - 10, ii = this.bidsArray.length; i < ii; i++) {
                 bid = this.bidsArray[i];
                 if (!firstPatternBid) {
-                    if (bid.delayBeforeEnd <= Madbid.minBidTime)
+                    if (bid.delayBeforeEnd <= (Madbid.minBidTime * this.timeout))
                         firstPatternBid = bid;
                 }
                 else {
-                    if (bid.delayBeforeEnd >= (this.timeout - Madbid.maxBidTime))
+                    if (bid.delayBeforeEnd >= (this.timeout * (1 - Madbid.maxBidTime)))
                         bidSatisfyingPattern++;
                 }
             }

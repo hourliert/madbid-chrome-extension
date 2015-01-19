@@ -14,11 +14,11 @@ module Madbid {
     export var shortPeriod = 60;
     export var longPeriod = 300;
     export var minAggrBid = 5;
-    export var minPacingBid = 5;
+    export var minPacingBid = 6;
     export var minTotalBid = 20;
-    export var minBidTime = 2;
-    export var minFollowingBid = 1;
-    export var maxBidTime = 2;
+    export var minBidTime = 0.4; //percent of auction timeout
+    export var minFollowingBid = 2;
+    export var maxBidTime = 0.6; //percent of auction timeout
     export var maxPersistentBidder = 2;
 
     export class AuctionHouse implements ISerializable{

@@ -118,9 +118,9 @@ module Madbid{
                 bid = this.bidsArray[i];
 
                 if (!firstPatternBid){
-                    if (bid.delayBeforeEnd <= minBidTime) firstPatternBid = bid;
+                    if (bid.delayBeforeEnd <= (minBidTime * this.timeout)) firstPatternBid = bid;
                 } else {
-                    if (bid.delayBeforeEnd >= (this.timeout - maxBidTime)) bidSatisfyingPattern++;
+                    if (bid.delayBeforeEnd >= (this.timeout * (1 -maxBidTime))) bidSatisfyingPattern++;
                 }
             }
             this.endingPatternDetected = (bidSatisfyingPattern >= minFollowingBid && 0 < this.persistentBidderNumber && this.persistentBidderNumber <= maxPersistentBidder);
