@@ -64,7 +64,7 @@ var Madbid;
                     bidder.setBidderType(auction, bidder.detectType(auction));
                 }
                 auction.detectPersistentBidder();
-                auction.detectEndingPatern();
+                auction.detectEndingPattern();
             }
         };
         AuctionHouse.prototype.toJson = function () {

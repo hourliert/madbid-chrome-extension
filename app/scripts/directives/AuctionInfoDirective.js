@@ -117,9 +117,9 @@ var Madbid;
                             }
                         },
                         series: []
-                    }, highCharts, graphBidIndexes = {}, graphBid = {};
+                    }, highCharts, graphBid = {}, lastBidIndexSeen = 0;
                     function buildSerie(auction, bidder, chart) {
-                        var i, bid, highchartPoint, newLength, serie = {
+                        var i, ii, bid, highchartPoint, newLength, serie = {
                             name: 'Bids',
                             color: 'rgba(119,152,191,0.9)',
                             data: [],
@@ -127,8 +127,9 @@ var Madbid;
                             shadow: false,
                             animation: false
                         };
-                        for (i in auction.bids) {
-                            bid = auction.bids[i];
+                        graphBid = {};
+                        for (i = 0, ii = auction.bidsArray.length; i < ii; i++) {
+                            bid = auction.bidsArray[i];
                             newLength = serie.data.push({
                                 id: bid.getId(),
                                 x: bid.date,
@@ -143,8 +144,8 @@ var Madbid;
                                 catch (e) {
                                 }
                             }
-                            graphBidIndexes[bid.getId()] = newLength - 1;
                             graphBid[bid.getId()] = bid;
+                            lastBidIndexSeen = i;
                         }
                         serie.data.sort(function (t1, t2) {
                             if (t1.x < t2.x) {
@@ -175,27 +176,25 @@ var Madbid;
                         }
                     }
                     function completeSerie(auction, bidder, chart) {
-                        var i, highchartPoint, bid;
-                        for (i in auction.bids) {
-                            bid = auction.bids[i];
-                            if (!graphBidIndexes[bid.getId()]) {
-                                chart.series[0].addPoint({
-                                    id: bid.getId(),
-                                    x: bid.date,
-                                    y: bid.value,
-                                    name: bid.bidder.getId()
-                                }, true, false);
-                                if (bidder && bid.hasBidder(bidder)) {
-                                    highchartPoint = chart.get(bid.getId());
-                                    try {
-                                        highchartPoint.select(true, true);
-                                    }
-                                    catch (e) {
-                                    }
+                        var i, ii, highchartPoint, bid;
+                        for (i = lastBidIndexSeen, ii = auction.bidsArray.length; i < ii; i++) {
+                            bid = auction.bidsArray[i];
+                            chart.series[0].addPoint({
+                                id: bid.getId(),
+                                x: bid.date,
+                                y: bid.value,
+                                name: bid.bidder.getId()
+                            }, true, false);
+                            if (bidder && bid.hasBidder(bidder)) {
+                                highchartPoint = chart.get(bid.getId());
+                                try {
+                                    highchartPoint.select(true, true);
                                 }
-                                graphBidIndexes[bid.getId()] = chart.series[0].data.length - 1;
-                                graphBid[bid.getId()] = bid;
+                                catch (e) {
+                                }
                             }
+                            graphBid[bid.getId()] = bid;
+                            lastBidIndexSeen = i;
                         }
                     }
                     container = angular.element('<div id="container-auction-info" style="min-width: 310px; height: 400px; margin: 0 auto"></div>');

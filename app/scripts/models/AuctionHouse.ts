@@ -81,7 +81,7 @@ module Madbid {
                     bidder.setBidderType(auction, bidder.detectType(auction));
                 }
                 auction.detectPersistentBidder();
-                auction.detectEndingPatern();
+                auction.detectEndingPattern();
             }
         }
 

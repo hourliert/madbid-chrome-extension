@@ -131,11 +131,13 @@ module Madbid.directives {
                         series: []
                     },
                     highCharts: HighchartsChartObject,
-                    graphBidIndexes: IStringNumberMap = {},
-                    graphBid: IBidMap = {};
+                    graphBid: IBidMap = {},
+                    lastBidIndexSeen: number = 0;
+
 
                 function buildSerie(auction: Auction, bidder: Bidder, chart: HighchartsChartObject): HighchartsSeriesOptions{
-                    var i: any,
+                    var i: number,
+                        ii: number,
                         bid: Bid,
                         highchartPoint: HighchartsPointObject,
                         newLength: number,
@@ -148,8 +150,10 @@ module Madbid.directives {
                             animation: false
                         };
 
-                    for (i in auction.bids){
-                        bid = auction.bids[i];
+                    graphBid = {};
+
+                    for (i = 0, ii = auction.bidsArray.length; i < ii; i++){
+                        bid = auction.bidsArray[i];
 
                         newLength = serie.data.push({
                             id: bid.getId(),
@@ -166,8 +170,8 @@ module Madbid.directives {
                             }
                         }
 
-                        graphBidIndexes[bid.getId()] = newLength- 1;
                         graphBid[bid.getId()] = bid;
+                        lastBidIndexSeen = i;
                     }
 
                     serie.data.sort(function(t1, t2){
@@ -202,32 +206,31 @@ module Madbid.directives {
                     }
                 }
                 function completeSerie(auction:Auction, bidder:Bidder, chart: HighchartsChartObject){
-                    var i: any,
+                    var i: number,
+                        ii: number,
                         highchartPoint: HighchartsPointObject,
                         bid: Bid;
 
-                    for (i in auction.bids){
-                        bid = auction.bids[i];
+                    for (i = lastBidIndexSeen, ii = auction.bidsArray.length; i < ii; i++){
+                        bid = auction.bidsArray[i];
 
-                        if (!graphBidIndexes[bid.getId()]){
-                            chart.series[0].addPoint({
-                                id: bid.getId(),
-                                x: bid.date,
-                                y: bid.value,
-                                name: bid.bidder.getId()
-                            }, true, false);
+                        chart.series[0].addPoint({
+                            id: bid.getId(),
+                            x: bid.date,
+                            y: bid.value,
+                            name: bid.bidder.getId()
+                        }, true, false);
 
-                            if (bidder && bid.hasBidder(bidder)){
-                                highchartPoint = chart.get(bid.getId());
-                                try {
-                                    highchartPoint.select(true, true);
-                                } catch(e){
-                                }
+                        if (bidder && bid.hasBidder(bidder)){
+                            highchartPoint = chart.get(bid.getId());
+                            try {
+                                highchartPoint.select(true, true);
+                            } catch(e){
                             }
-
-                            graphBidIndexes[bid.getId()] = chart.series[0].data.length - 1;
-                            graphBid[bid.getId()] = bid;
                         }
+
+                        graphBid[bid.getId()] = bid;
+                        lastBidIndexSeen = i;
                     }
                 }
 
@@ -240,7 +243,6 @@ module Madbid.directives {
                 $scope.$watch('bidder', function(newVal: Bidder, oldVal: Bidder){
                     if (newVal !== oldVal){
                         bidder = newVal;
-
                         updateSerie(auction, bidder, highCharts);
                     }
                 });
