@@ -28,7 +28,6 @@ module Madbid{
         public bids: IBidMap;
         public bidsArray: Array<Bid>;
         public lastBid: Bid;
-        public lastBids: Array<Bid>;
         private lastBidder: Bidder;
 
         public previousEndTime: Date;
@@ -49,7 +48,6 @@ module Madbid{
             this.item = item;
             this.bidders = {};
             this.bids = {};
-            this.lastBids = [];
             this.bidsArray = [];
             this.closed = false;
             this.endingPatternDetected = false;
@@ -116,8 +114,8 @@ module Madbid{
                 firstPatternBid: Bid,
                 bidSatisfyingPattern: number = 0;
 
-            for (i = 0, ii = this.lastBids.length; i < ii; i++){
-                bid = this.lastBids[i];
+            for (i = (this.bidsArray.length < 10) ? 0 : this.bidsArray.length - 10, ii = this.bidsArray.length; i < ii; i++){
+                bid = this.bidsArray[i];
 
                 if (!firstPatternBid){
                     if (bid.delayBeforeEnd <= minBidTime) firstPatternBid = bid;
@@ -177,10 +175,6 @@ module Madbid{
             this.bids[bid.getId()] = bid;
 
             this.lastBid = bid;
-
-            if (bid !== this.lastBids[this.lastBids.length -1]) this.lastBids.push(bid); //maybe unseless since i declared a bidsArray
-            if (this.lastBids.length > 10) this.lastBids.shift();
-
             if (bid !== this.bidsArray[this.bidsArray.length -1]) this.bidsArray.push(bid);
 
             this.currentPrice = bid.value;

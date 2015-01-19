@@ -12,7 +12,6 @@ var Madbid;
             this.item = item;
             this.bidders = {};
             this.bids = {};
-            this.lastBids = [];
             this.bidsArray = [];
             this.closed = false;
             this.endingPatternDetected = false;
@@ -67,8 +66,8 @@ var Madbid;
         };
         Auction.prototype.detectEndingPattern = function () {
             var i, ii, bid, firstPatternBid, bidSatisfyingPattern = 0;
-            for (i = 0, ii = this.lastBids.length; i < ii; i++) {
-                bid = this.lastBids[i];
+            for (i = (this.bidsArray.length < 10) ? 0 : this.bidsArray.length - 10, ii = this.bidsArray.length; i < ii; i++) {
+                bid = this.bidsArray[i];
                 if (!firstPatternBid) {
                     if (bid.delayBeforeEnd <= Madbid.minBidTime)
                         firstPatternBid = bid;
@@ -125,10 +124,6 @@ var Madbid;
         Auction.prototype.addBid = function (bid) {
             this.bids[bid.getId()] = bid;
             this.lastBid = bid;
-            if (bid !== this.lastBids[this.lastBids.length - 1])
-                this.lastBids.push(bid); //maybe unseless since i declared a bidsArray
-            if (this.lastBids.length > 10)
-                this.lastBids.shift();
             if (bid !== this.bidsArray[this.bidsArray.length - 1])
                 this.bidsArray.push(bid);
             this.currentPrice = bid.value;
