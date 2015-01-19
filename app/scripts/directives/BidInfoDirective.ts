@@ -72,6 +72,7 @@ module Madbid.directives {
 
                 function buildSerie(auction: Auction, bidder: Bidder, timeSelection: ITimeSelection): HighchartsSeriesOptions{
                     var i: any,
+                        ii: number,
                         bid: Bid,
                         serie: HighchartsSeriesOptions = {
                             name: 'Bids',
@@ -81,8 +82,8 @@ module Madbid.directives {
 
                     graphBidTime = {};
 
-                    for (i in auction.bids){
-                        bid = auction.bids[i];
+                    for (i = 0, ii = auction.bidsArray.length; i < ii; i++){
+                        bid = auction.bidsArray[i];
 
                         if (bid.delayBeforeEnd < 0 || bid.delayBeforeEnd > auction.timeout || (bidder && bid.bidder !== bidder) || !bid.isBetween(timeSelection.dateMin, timeSelection.dateMax)) continue;
 
@@ -106,13 +107,14 @@ module Madbid.directives {
                 }
                 function updateSerie(auction: Auction, bidder: Bidder, timeSelection: ITimeSelection, chart: HighchartsChartObject){
                     var i: any,
+                        ii: number,
                         bid: Bid,
                         bidTime: any = {},
                         highchartPoint: HighchartsPointObject;
 
 
-                    for (i in auction.bids){
-                        bid = auction.bids[i];
+                    for (i = 0, ii = auction.bidsArray.length; i < ii; i++){
+                        bid = auction.bidsArray[i];
 
                         if (bid.delayBeforeEnd < 0 || bid.delayBeforeEnd > auction.timeout || (bidder && bid.bidder !== bidder) || !bid.isBetween(timeSelection.dateMin, timeSelection.dateMax)) continue;
 

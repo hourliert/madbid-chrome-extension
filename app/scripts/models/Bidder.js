@@ -16,8 +16,10 @@ var Madbid;
             this.name = param.bidderName;
             this.ah = ah;
             this.bids = {};
+            this.bidsArray = [];
             this.auctions = {};
             this.bidsByAuction = {};
+            this.bidsByAuctionArray = [];
             this.bidderTypeByAuction = {};
             this.lastBidByAuction = {};
         }
@@ -37,11 +39,11 @@ var Madbid;
             return this.bidderTypeByAuction[auction.getId()] === 0 /* Aggressive */;
         };
         Bidder.prototype.detectType = function (auction) {
-            var bid, bidMap, nbShortBid = 0, nbLongBid = 0, nbTotalBid = 0, now = new Date(), i;
-            if (!(bidMap = this.bidsByAuction[auction.getId()]))
+            var bid, bidsArray, nbShortBid = 0, nbLongBid = 0, nbTotalBid = 0, now = new Date(), i, ii;
+            if (!(bidsArray = this.bidsByAuctionArray[auction.getId()]))
                 return 2 /* Idle */;
-            for (i in bidMap) {
-                bid = bidMap[i];
+            for (i = 0, i < bidsArray.length; i < ii; i++) {
+                bid = bidsArray[i];
                 nbTotalBid++;
                 if ((+bid.date + Madbid.shortPeriod * 1000) > +now)
                     nbShortBid++;
@@ -59,11 +61,19 @@ var Madbid;
             return this.name;
         };
         Bidder.prototype.addBid = function (bid) {
-            this.bids[bid.getId()] = bid;
-            if (!this.bidsByAuction[bid.auction.getId()]) {
+            var bidsForMap = this.bidsByAuction[bid.auction.getId()], bidsForArray = this.bidsByAuctionArray[bid.auction.getId()];
+            if (!bidsForMap)
                 this.bidsByAuction[bid.auction.getId()] = {};
-            }
-            this.bidsByAuction[bid.auction.getId()][bid.getId()] = bid;
+            if (!bidsForArray)
+                this.bidsByAuctionArray[bid.auction.getId()] = [];
+            bidsForMap = this.bidsByAuction[bid.auction.getId()];
+            bidsForArray = this.bidsByAuctionArray[bid.auction.getId()];
+            this.bids[bid.getId()] = bid;
+            if (bid !== this.bidsArray[this.bidsArray.length - 1])
+                this.bidsArray.push(bid);
+            bidsForMap[bid.getId()] = bid;
+            if (bid !== bidsForArray[bidsForArray.length - 1])
+                bidsForArray.push(bid);
             this.lastBidByAuction[bid.auction.getId()] = bid;
         };
         Bidder.prototype.hasBidOn = function (auction) {
@@ -86,10 +96,10 @@ var Madbid;
             return false;
         };
         Bidder.prototype.getNumberBidsOn = function (auction, date1, date2) {
-            var cpt = 0, bid, i;
-            for (i in this.bids) {
-                bid = this.bids[i];
-                if (bid.isOn(auction) && bid.isBetween(date1, date2))
+            var cpt = 0, bid, i, bidMap = this.bidsByAuction[auction.getId()];
+            for (i in bidMap) {
+                bid = bidMap[i];
+                if (bid.isBetween(date1, date2))
                     cpt++;
             }
             return cpt;

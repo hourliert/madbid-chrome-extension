@@ -55,14 +55,14 @@ var Madbid;
                         series: []
                     }, highCharts, graphBidTime = {};
                     function buildSerie(auction, bidder, timeSelection) {
-                        var i, bid, serie = {
+                        var i, ii, bid, serie = {
                             name: 'Bids',
                             data: [],
                             color: 'rgba(119,152,191,0.9)'
                         };
                         graphBidTime = {};
-                        for (i in auction.bids) {
-                            bid = auction.bids[i];
+                        for (i = 0, ii = auction.bidsArray.length; i < ii; i++) {
+                            bid = auction.bidsArray[i];
                             if (bid.delayBeforeEnd < 0 || bid.delayBeforeEnd > auction.timeout || (bidder && bid.bidder !== bidder) || !bid.isBetween(timeSelection.dateMin, timeSelection.dateMax))
                                 continue;
                             if (!graphBidTime[bid.delayBeforeEnd]) {
@@ -82,9 +82,9 @@ var Madbid;
                         return serie;
                     }
                     function updateSerie(auction, bidder, timeSelection, chart) {
-                        var i, bid, bidTime = {}, highchartPoint;
-                        for (i in auction.bids) {
-                            bid = auction.bids[i];
+                        var i, ii, bid, bidTime = {}, highchartPoint;
+                        for (i = 0, ii = auction.bidsArray.length; i < ii; i++) {
+                            bid = auction.bidsArray[i];
                             if (bid.delayBeforeEnd < 0 || bid.delayBeforeEnd > auction.timeout || (bidder && bid.bidder !== bidder) || !bid.isBetween(timeSelection.dateMin, timeSelection.dateMax))
                                 continue;
                             if (!bidTime[bid.delayBeforeEnd]) {

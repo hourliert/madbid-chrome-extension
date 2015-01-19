@@ -25,6 +25,7 @@ module Madbid{
         private id: number;
         public item: Item;
         public bidders: IBidderMap;
+        public biddersArray: Array<Bidder>;
         public bids: IBidMap;
         public bidsArray: Array<Bid>;
         public lastBid: Bid;
@@ -49,26 +50,13 @@ module Madbid{
             this.bidders = {};
             this.bids = {};
             this.bidsArray = [];
+            this.biddersArray = [];
             this.closed = false;
             this.endingPatternDetected = false;
 
             this.updateStat(param);
         }
 
-        public getCloseToEndBids(): IBidMap{
-            var obj: IBidMap = {},
-                i: any,
-                bid: Bid;
-
-            for(i in this.bids){
-                bid = this.bids[i];
-                if (bid.delayBeforeEnd <= 2){ //bid between 0 and 2 seconds)
-                    obj[bid.getId()] = bid;
-                }
-            }
-
-            return obj;
-        }
         public updateStat(param: ISerializedAuction){
             var newTime: Date;
 
@@ -93,15 +81,16 @@ module Madbid{
             if (!this.timeout || ((+this.lastBid.date + this.timeout*1000) > +this.endTime)) this.closed = true;
         }
         public detectPersistentBidder(){
-            var i: any,
+            var i: number,
+                ii: number,
                 bidder: Bidder;
 
             this.persistentBidderNumber = 0;
             this.pacingBidderNumber = 0;
             this.aggresiveBidderNumber = 0;
 
-            for (i in this.bidders){
-                bidder = this.bidders[i];
+            for (i = 0, ii = this.biddersArray.length; i < ii; i++){
+                bidder = this.biddersArray[i];
                 if (bidder.isAggresive(this)) this.aggresiveBidderNumber++;
                 if (bidder.isPacing(this)) this.pacingBidderNumber++;
             }
@@ -145,11 +134,12 @@ module Madbid{
             return Object.keys(this.bids).length;
         }
         public hasNewBidderOnSince(biddersInCourse: IBidderMap, date1?: Date, date2?: Date): boolean{
-            var i: any,
+            var i: number,
+                ii: number,
                 bidder: Bidder;
 
-            for (i in this.bidders){
-                bidder = this.bidders[i];
+            for (i = 0, ii = this.biddersArray.length; i < ii; i++){
+                bidder = this.biddersArray[i];
 
                 if (!bidder.hasBidOnBetween(this, date1, date2)) continue;
 
@@ -160,11 +150,12 @@ module Madbid{
             return false;
         }
         public hasNewBidTimeSinceFor(bidTime: any, bidder: Bidder, dateMin: Date, dateMax: Date): boolean{
-            var i: any,
+            var i: number,
+                ii: number,
                 bid: Bid;
 
-            for (i in this.bids){
-                bid = this.bids[i];
+            for (i = 0, ii = this.bidsArray.length; i < ii; i++){
+                bid = this.bidsArray[i];
                 if (bid.delayBeforeEnd < 0 || bid.delayBeforeEnd > this.timeout || (bidder && bid.bidder !== bidder) || !bid.isBetween(dateMin, dateMax)) continue;
 
                 if (!bidTime[bid.delayBeforeEnd]) return true;
@@ -182,6 +173,7 @@ module Madbid{
         public addBidder(bidder: Bidder){
             this.bidders[bidder.getId()] = bidder;
             this.lastBidder = bidder;
+            if (this.biddersArray.indexOf(bidder) < 0) this.biddersArray.push(bidder);
         }
         public toJson(): ISerializedAuction{
             var bids: Array<ISerializedBid> = [],

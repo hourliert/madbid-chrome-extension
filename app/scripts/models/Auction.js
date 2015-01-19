@@ -13,20 +13,11 @@ var Madbid;
             this.bidders = {};
             this.bids = {};
             this.bidsArray = [];
+            this.biddersArray = [];
             this.closed = false;
             this.endingPatternDetected = false;
             this.updateStat(param);
         }
-        Auction.prototype.getCloseToEndBids = function () {
-            var obj = {}, i, bid;
-            for (i in this.bids) {
-                bid = this.bids[i];
-                if (bid.delayBeforeEnd <= 2) {
-                    obj[bid.getId()] = bid;
-                }
-            }
-            return obj;
-        };
         Auction.prototype.updateStat = function (param) {
             var newTime;
             if (param.endTime) {
@@ -51,12 +42,12 @@ var Madbid;
                 this.closed = true;
         };
         Auction.prototype.detectPersistentBidder = function () {
-            var i, bidder;
+            var i, ii, bidder;
             this.persistentBidderNumber = 0;
             this.pacingBidderNumber = 0;
             this.aggresiveBidderNumber = 0;
-            for (i in this.bidders) {
-                bidder = this.bidders[i];
+            for (i = 0, ii = this.biddersArray.length; i < ii; i++) {
+                bidder = this.biddersArray[i];
                 if (bidder.isAggresive(this))
                     this.aggresiveBidderNumber++;
                 if (bidder.isPacing(this))
@@ -99,9 +90,9 @@ var Madbid;
             return Object.keys(this.bids).length;
         };
         Auction.prototype.hasNewBidderOnSince = function (biddersInCourse, date1, date2) {
-            var i, bidder;
-            for (i in this.bidders) {
-                bidder = this.bidders[i];
+            var i, ii, bidder;
+            for (i = 0, ii = this.biddersArray.length; i < ii; i++) {
+                bidder = this.biddersArray[i];
                 if (!bidder.hasBidOnBetween(this, date1, date2))
                     continue;
                 if (!biddersInCourse[bidder.getId()]) {
@@ -111,9 +102,9 @@ var Madbid;
             return false;
         };
         Auction.prototype.hasNewBidTimeSinceFor = function (bidTime, bidder, dateMin, dateMax) {
-            var i, bid;
-            for (i in this.bids) {
-                bid = this.bids[i];
+            var i, ii, bid;
+            for (i = 0, ii = this.bidsArray.length; i < ii; i++) {
+                bid = this.bidsArray[i];
                 if (bid.delayBeforeEnd < 0 || bid.delayBeforeEnd > this.timeout || (bidder && bid.bidder !== bidder) || !bid.isBetween(dateMin, dateMax))
                     continue;
                 if (!bidTime[bid.delayBeforeEnd])
@@ -131,6 +122,8 @@ var Madbid;
         Auction.prototype.addBidder = function (bidder) {
             this.bidders[bidder.getId()] = bidder;
             this.lastBidder = bidder;
+            if (this.biddersArray.indexOf(bidder) < 0)
+                this.biddersArray.push(bidder);
         };
         Auction.prototype.toJson = function () {
             var bids = [], item, i, bidders = [], obj;

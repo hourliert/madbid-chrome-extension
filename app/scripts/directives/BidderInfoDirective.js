@@ -63,26 +63,24 @@ var Madbid;
                             }
                         },
                         series: []
-                    }, highCharts, bidderBidsNumberMap = {}, graphBidderIndexes = {}, graphBidder = {};
+                    }, highCharts, bidderBidsNumberMap = {}, graphBidder = {};
                     function buildSerie(auction, timeSelection) {
-                        var i, bidder, nbBids, newLength, serie = {
+                        var i, ii, bidder, nbBids, newLength, serie = {
                             name: 'Bids',
                             data: [],
                             color: 'rgba(119,152,191,0.9)'
                         };
-                        graphBidderIndexes = {};
                         graphBidder = {};
                         bidderBidsNumberMap = {};
-                        for (i in ah.bidders) {
-                            bidder = ah.bidders[i];
-                            if (!bidder.hasBidOn(auction) || !(nbBids = bidder.getNumberBidsOn(auction, timeSelection.dateMin, timeSelection.dateMax)))
+                        for (i = 0, ii = auction.biddersArray.length; i < ii; i++) {
+                            bidder = auction.biddersArray[i];
+                            if (!(nbBids = bidder.getNumberBidsOn(auction, timeSelection.dateMin, timeSelection.dateMax)))
                                 continue;
                             newLength = serie.data.push({
                                 id: bidder.getId(),
                                 name: bidder.getId(),
                                 y: nbBids
                             });
-                            graphBidderIndexes[bidder.getId()] = newLength - 1;
                             graphBidder[bidder.getId()] = bidder;
                             bidderBidsNumberMap[bidder.getId()] = nbBids;
                         }
@@ -90,9 +88,9 @@ var Madbid;
                     }
                     function updateSerie(auction, timeSelection, chart) {
                         var i, nbBids, highchartPoint, bidder;
-                        for (i in ah.bidders) {
-                            bidder = ah.bidders[i];
-                            if (!bidder.hasBidOn(auction) || !(nbBids = bidder.getNumberBidsOn(auction, timeSelection.dateMin, timeSelection.dateMax)))
+                        for (i in auction.bidders) {
+                            bidder = auction.bidders[i];
+                            if (!(nbBids = bidder.getNumberBidsOn(auction, timeSelection.dateMin, timeSelection.dateMax)))
                                 continue;
                             if (nbBids !== bidderBidsNumberMap[bidder.getId()]) {
                                 highchartPoint = chart.get(bidder.getId());

@@ -13,6 +13,9 @@ module Madbid {
     export interface IAuctionBidMap{
         [index: number]: IBidMap;
     }
+    export interface IAuctionBidArrayMap{
+        [index: number]: Array<Bid>;
+    }
     export interface IAuctionLastBidMap{
         [index: number]: Bid;
     }
@@ -32,8 +35,10 @@ module Madbid {
         private ah: AuctionHouse;
         private name: string;
         private bids: IBidMap;
+        public bidsArray: Array<Bid>;
         private auctions: IAuctionMap;
         private bidsByAuction: IAuctionBidMap;
+        private bidsByAuctionArray: IAuctionBidArrayMap;
         private bidderTypeByAuction: IAuctionBidderTypeMap;
         private lastBidByAuction: IAuctionLastBidMap;
 
@@ -41,8 +46,10 @@ module Madbid {
             this.name = param.bidderName;
             this.ah = ah;
             this.bids = {};
+            this.bidsArray = [];
             this.auctions = {};
             this.bidsByAuction = {};
+            this.bidsByAuctionArray = [];
             this.bidderTypeByAuction = {};
             this.lastBidByAuction = {};
         }
@@ -64,17 +71,18 @@ module Madbid {
         }
         public detectType(auction: Auction): BidderType{
             var bid: Bid,
-                bidMap: IBidMap,
+                bidsArray: Array<Bid>,
                 nbShortBid: number = 0,
                 nbLongBid: number = 0,
                 nbTotalBid: number = 0,
                 now: Date = new Date(),
-                i: any;
+                i: number,
+                ii: number;
 
-            if (!(bidMap = this.bidsByAuction[auction.getId()])) return BidderType.Idle;
+            if (!(bidsArray = this.bidsByAuctionArray[auction.getId()])) return BidderType.Idle;
 
-            for (i in bidMap){
-                bid = bidMap[i];
+            for (i = 0, i < bidsArray.length; i < ii; i++){
+                bid = bidsArray[i];
 
                 nbTotalBid++;
 
@@ -92,12 +100,23 @@ module Madbid {
             return this.name;
         }
         public addBid(bid: Bid){
+            var bidsForMap: IBidMap = this.bidsByAuction[bid.auction.getId()],
+                bidsForArray: Array<Bid> = this.bidsByAuctionArray[bid.auction.getId()];
+
+            if (!bidsForMap) this.bidsByAuction[bid.auction.getId()] = {};
+            if (!bidsForArray) this.bidsByAuctionArray[bid.auction.getId()] = [];
+
+            bidsForMap = this.bidsByAuction[bid.auction.getId()];
+            bidsForArray = this.bidsByAuctionArray[bid.auction.getId()];
+
             this.bids[bid.getId()] = bid;
 
-            if (!this.bidsByAuction[bid.auction.getId()]){
-                this.bidsByAuction[bid.auction.getId()] = {};
-            }
-            this.bidsByAuction[bid.auction.getId()][bid.getId()] = bid;
+            if (bid !== this.bidsArray[this.bidsArray.length -1]) this.bidsArray.push(bid);
+
+            bidsForMap[bid.getId()] = bid;
+            if (bid !== bidsForArray[bidsForArray.length -1]) bidsForArray.push(bid);
+
+
             this.lastBidByAuction[bid.auction.getId()] = bid;
         }
         public hasBidOn(auction: Auction): boolean{
@@ -123,11 +142,12 @@ module Madbid {
         public getNumberBidsOn(auction: Auction, date1?: Date, date2?: Date): number{
             var cpt = 0,
                 bid: Bid,
-                i: any;
+                i: any,
+                bidMap: IBidMap = this.bidsByAuction[auction.getId()];
 
-            for (i in this.bids){
-                bid = this.bids[i];
-                if (bid.isOn(auction) && bid.isBetween(date1, date2)) cpt++;
+            for (i in bidMap){
+                bid = bidMap[i];
+                if (bid.isBetween(date1, date2)) cpt++;
             }
             return cpt;
         }

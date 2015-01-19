@@ -27,6 +27,10 @@ module Madbid{
         [index: string]: number;
     }
 
+    export interface INumberBooleanMap{
+        [index: number]: boolean;
+    }
+
     export interface IMadbidResponse{
         cmd: string;
         status: number;
