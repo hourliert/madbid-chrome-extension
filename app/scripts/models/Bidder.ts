@@ -28,7 +28,8 @@ module Madbid {
     export enum BidderType{
         Aggressive,
         Pacing,
-        Idle
+        Idle,
+        SleepyActive
     }
 
     export class Bidder implements ISerializable{
@@ -40,6 +41,7 @@ module Madbid {
         private bidsByAuction: IAuctionBidMap;
         private bidsByAuctionArray: IAuctionBidArrayMap;
         private bidderTypeByAuction: IAuctionBidderTypeMap;
+        private consideredPersistentByAuction: INumberBooleanMap;
         private lastBidByAuction: IAuctionLastBidMap;
 
         constructor(ah: AuctionHouse, param: ISerializedBidder){
@@ -52,13 +54,15 @@ module Madbid {
             this.bidsByAuctionArray = [];
             this.bidderTypeByAuction = {};
             this.lastBidByAuction = {};
+            this.consideredPersistentByAuction = {};
         }
 
         public setBidderType(auction: Auction, type: BidderType){
+            if (type !== BidderType.Idle) this.consideredPersistentByAuction[auction.getId()] = true;
             this.bidderTypeByAuction[auction.getId()] = type;
         }
         public isPersistent(auction: Auction): boolean{
-            return this.bidderTypeByAuction[auction.getId()] === BidderType.Aggressive || this.bidderTypeByAuction[auction.getId()] === BidderType.Pacing;
+            return this.isAggresive(auction) || this.isPacing(auction) || this.isSleepyActive(auction);
         }
         public isPacing(auction: Auction): boolean{
             return this.bidderTypeByAuction[auction.getId()] === BidderType.Pacing;
@@ -69,10 +73,14 @@ module Madbid {
         public isAggresive(auction: Auction): boolean{
             return this.bidderTypeByAuction[auction.getId()] === BidderType.Aggressive;
         }
+        public isSleepyActive(auction: Auction): boolean{
+            return this.bidderTypeByAuction[auction.getId()] === BidderType.SleepyActive;
+        }
         public detectType(auction: Auction): BidderType{
             var bid: Bid,
                 bidsArray: Array<Bid>,
                 nbShortBid: number = 0,
+                nbShortBidForSleepy: number = 0,
                 nbLongBid: number = 0,
                 nbTotalBid: number = 0,
                 now: Date = new Date(),
@@ -81,17 +89,19 @@ module Madbid {
 
             if (!(bidsArray = this.bidsByAuctionArray[auction.getId()])) return BidderType.Idle;
 
-            for (i = 0, i < bidsArray.length; i < ii; i++){
+            for (i = 0, ii = bidsArray.length; i < ii; i++){
                 bid = bidsArray[i];
 
                 nbTotalBid++;
 
                 if ((+bid.date + shortPeriod * 1000) > +now) nbShortBid++;
                 if ((+bid.date + longPeriod * 1000) > +now) nbLongBid++;
+                if ((+bid.date + shortPeriodForSleepy * 1000) > +now) nbShortBidForSleepy++;
             }
 
             if (nbShortBid >= minAggrBid) return BidderType.Aggressive;
             if (nbShortBid >= 1 && nbLongBid >= minPacingBid && nbTotalBid >= minTotalBid) return BidderType.Pacing;
+            if (this.consideredPersistentByAuction[auction.getId()] && nbShortBidForSleepy >= 1) return BidderType.SleepyActive;
         }
         public updateStat(param: ISerializedBidder){
 

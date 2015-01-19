@@ -11,14 +11,15 @@ module Madbid {
         auctions: Array<ISerializedAuction>;
     }
 
-    export var shortPeriod = 60;
-    export var longPeriod = 300;
+    export var shortPeriod = 30;
+    export var shortPeriodForSleepy = 60;
+    export var longPeriod = 120;
     export var minAggrBid = 5;
     export var minPacingBid = 6;
     export var minTotalBid = 20;
-    export var minBidTime = 0.4; //percent of auction timeout
-    export var minFollowingBid = 2;
-    export var maxBidTime = 0.6; //percent of auction timeout
+    export var minBidTime = 0.3; //percent of auction timeout
+    export var minFollowingBid = 3;
+    export var maxBidTime = 0.7; //percent of auction timeout
     export var maxPersistentBidder = 2;
 
     export class AuctionHouse implements ISerializable{

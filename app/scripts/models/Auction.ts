@@ -41,6 +41,7 @@ module Madbid{
         public persistentBidderNumber: number;
         public pacingBidderNumber: number;
         public aggresiveBidderNumber: number;
+        public sleepyActiveBidderNumber: number;
         public endingPatternDetected: boolean;
 
         constructor(ah: AuctionHouse, item: Item, param: ISerializedAuction){
@@ -88,13 +89,15 @@ module Madbid{
             this.persistentBidderNumber = 0;
             this.pacingBidderNumber = 0;
             this.aggresiveBidderNumber = 0;
+            this.sleepyActiveBidderNumber = 0;
 
             for (i = 0, ii = this.biddersArray.length; i < ii; i++){
                 bidder = this.biddersArray[i];
                 if (bidder.isAggresive(this)) this.aggresiveBidderNumber++;
                 if (bidder.isPacing(this)) this.pacingBidderNumber++;
+                if (bidder.isSleepyActive(this)) this.sleepyActiveBidderNumber++;
             }
-            this.persistentBidderNumber = this.pacingBidderNumber + this.aggresiveBidderNumber;
+            this.persistentBidderNumber = this.pacingBidderNumber + this.aggresiveBidderNumber + this.sleepyActiveBidderNumber;
         }
         public detectEndingPattern(){
             var i: number,
