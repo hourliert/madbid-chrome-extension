@@ -5,13 +5,13 @@
 'use strict';
 var Madbid;
 (function (Madbid) {
-    Madbid.shortPeriod = 30;
-    Madbid.shortPeriodForSleepy = 60;
-    Madbid.longPeriod = 120;
+    Madbid.shortPeriod = 20;
+    Madbid.shortPeriodForSleepy = 20;
+    Madbid.longPeriod = 60;
     Madbid.minAggrBid = 5;
-    Madbid.minPacingBid = 6;
-    Madbid.minTotalBid = 20;
-    Madbid.minBidTime = 0.3; //percent of auction timeout
+    Madbid.minPacingBid = 8;
+    Madbid.minTotalBid = 26;
+    Madbid.minBidTime = 1; //percent of auction timeout
     Madbid.minFollowingBid = 3;
     Madbid.maxBidTime = 0.7; //percent of auction timeout
     Madbid.maxPersistentBidder = 2;

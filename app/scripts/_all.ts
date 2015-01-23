@@ -4,6 +4,9 @@
 
 
 /// <reference path='../../typings/tsd.d.ts' />
+/// <reference path='chrome/messaging.ts' />
+/// <reference path='chrome/contentscript.ts' />
+/// <reference path='injected/autobidder.ts' />
 /// <reference path='models/Bidder.ts' />
 /// <reference path='models/Bid.ts' />
 /// <reference path='models/Auction.ts' />

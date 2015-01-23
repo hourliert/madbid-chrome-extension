@@ -106,16 +106,17 @@ module Madbid{
                 firstPatternBid: Bid,
                 bidSatisfyingPattern: number = 0;
 
-            for (i = (this.bidsArray.length < 10) ? 0 : this.bidsArray.length - 10, ii = this.bidsArray.length; i < ii; i++){
+            for (i = (this.bidsArray.length < 10) ? 0 : (this.bidsArray.length - 10), ii = this.bidsArray.length; i < ii; i++){
                 bid = this.bidsArray[i];
 
                 if (!firstPatternBid){
-                    if (bid.delayBeforeEnd <= (minBidTime * this.timeout)) firstPatternBid = bid;
+                    if (bid.delayBeforeEnd <= minBidTime) firstPatternBid = bid;
                 } else {
-                    if (bid.delayBeforeEnd >= (this.timeout * (1 -maxBidTime))) bidSatisfyingPattern++;
+                    if ((this.timeout - bid.delayBeforeEnd) <= this.timeout*maxBidTime) bidSatisfyingPattern++;
+                    //if (bid.delayBeforeEnd >= (this.timeout * (1 - maxBidTime))) bidSatisfyingPattern++;
                 }
             }
-            this.endingPatternDetected = (bidSatisfyingPattern >= minFollowingBid && 0 < this.persistentBidderNumber && this.persistentBidderNumber <= maxPersistentBidder);
+            this.endingPatternDetected = (bidSatisfyingPattern == minFollowingBid && 0 <= this.persistentBidderNumber && this.persistentBidderNumber <= maxPersistentBidder);
         }
         public getId(): number{
             return this.id;

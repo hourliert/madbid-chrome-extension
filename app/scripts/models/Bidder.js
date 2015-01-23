@@ -6,9 +6,9 @@
 var Madbid;
 (function (Madbid) {
     (function (BidderType) {
-        BidderType[BidderType["Aggressive"] = 0] = "Aggressive";
-        BidderType[BidderType["Pacing"] = 1] = "Pacing";
-        BidderType[BidderType["Idle"] = 2] = "Idle";
+        BidderType[BidderType["Idle"] = 0] = "Idle";
+        BidderType[BidderType["Aggressive"] = 1] = "Aggressive";
+        BidderType[BidderType["Pacing"] = 2] = "Pacing";
         BidderType[BidderType["SleepyActive"] = 3] = "SleepyActive";
     })(Madbid.BidderType || (Madbid.BidderType = {}));
     var BidderType = Madbid.BidderType;
@@ -26,7 +26,7 @@ var Madbid;
             this.consideredPersistentByAuction = {};
         }
         Bidder.prototype.setBidderType = function (auction, type) {
-            if (type !== 2 /* Idle */)
+            if (type !== 0 /* Idle */)
                 this.consideredPersistentByAuction[auction.getId()] = true;
             this.bidderTypeByAuction[auction.getId()] = type;
         };
@@ -34,13 +34,13 @@ var Madbid;
             return this.isAggresive(auction) || this.isPacing(auction) || this.isSleepyActive(auction);
         };
         Bidder.prototype.isPacing = function (auction) {
-            return this.bidderTypeByAuction[auction.getId()] === 1 /* Pacing */;
+            return this.bidderTypeByAuction[auction.getId()] === 2 /* Pacing */;
         };
         Bidder.prototype.isIdle = function (auction) {
-            return this.bidderTypeByAuction[auction.getId()] === 2 /* Idle */;
+            return this.bidderTypeByAuction[auction.getId()] === 0 /* Idle */;
         };
         Bidder.prototype.isAggresive = function (auction) {
-            return this.bidderTypeByAuction[auction.getId()] === 0 /* Aggressive */;
+            return this.bidderTypeByAuction[auction.getId()] === 1 /* Aggressive */;
         };
         Bidder.prototype.isSleepyActive = function (auction) {
             return this.bidderTypeByAuction[auction.getId()] === 3 /* SleepyActive */;
@@ -48,7 +48,7 @@ var Madbid;
         Bidder.prototype.detectType = function (auction) {
             var bid, bidsArray, nbShortBid = 0, nbShortBidForSleepy = 0, nbLongBid = 0, nbTotalBid = 0, now = new Date(), i, ii;
             if (!(bidsArray = this.bidsByAuctionArray[auction.getId()]))
-                return 2 /* Idle */;
+                return 0 /* Idle */;
             for (i = 0, ii = bidsArray.length; i < ii; i++) {
                 bid = bidsArray[i];
                 nbTotalBid++;
@@ -60,11 +60,12 @@ var Madbid;
                     nbShortBidForSleepy++;
             }
             if (nbShortBid >= Madbid.minAggrBid)
-                return 0 /* Aggressive */;
+                return 1 /* Aggressive */;
             if (nbShortBid >= 1 && nbLongBid >= Madbid.minPacingBid && nbTotalBid >= Madbid.minTotalBid)
-                return 1 /* Pacing */;
+                return 2 /* Pacing */;
             if (this.consideredPersistentByAuction[auction.getId()] && nbShortBidForSleepy >= 1)
                 return 3 /* SleepyActive */;
+            return 0 /* Idle */;
         };
         Bidder.prototype.updateStat = function (param) {
         };

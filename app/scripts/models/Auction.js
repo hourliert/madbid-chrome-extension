@@ -60,18 +60,18 @@ var Madbid;
         };
         Auction.prototype.detectEndingPattern = function () {
             var i, ii, bid, firstPatternBid, bidSatisfyingPattern = 0;
-            for (i = (this.bidsArray.length < 10) ? 0 : this.bidsArray.length - 10, ii = this.bidsArray.length; i < ii; i++) {
+            for (i = (this.bidsArray.length < 10) ? 0 : (this.bidsArray.length - 10), ii = this.bidsArray.length; i < ii; i++) {
                 bid = this.bidsArray[i];
                 if (!firstPatternBid) {
-                    if (bid.delayBeforeEnd <= (Madbid.minBidTime * this.timeout))
+                    if (bid.delayBeforeEnd <= Madbid.minBidTime)
                         firstPatternBid = bid;
                 }
                 else {
-                    if (bid.delayBeforeEnd >= (this.timeout * (1 - Madbid.maxBidTime)))
+                    if ((this.timeout - bid.delayBeforeEnd) <= this.timeout * Madbid.maxBidTime)
                         bidSatisfyingPattern++;
                 }
             }
-            this.endingPatternDetected = (bidSatisfyingPattern >= Madbid.minFollowingBid && 0 < this.persistentBidderNumber && this.persistentBidderNumber <= Madbid.maxPersistentBidder);
+            this.endingPatternDetected = (bidSatisfyingPattern == Madbid.minFollowingBid && 0 <= this.persistentBidderNumber && this.persistentBidderNumber <= Madbid.maxPersistentBidder);
         };
         Auction.prototype.getId = function () {
             return this.id;

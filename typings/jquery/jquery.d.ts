@@ -3115,25 +3115,25 @@ interface JQuery {
     /**
      * Insert every element in the set of matched elements to the end of the target.
      * 
-     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be inserted at the end of the element(s) specified by this parameter.
+     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be injected at the end of the element(s) specified by this parameter.
      */
     appendTo(target: JQuery): JQuery;
     /**
      * Insert every element in the set of matched elements to the end of the target.
      * 
-     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be inserted at the end of the element(s) specified by this parameter.
+     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be injected at the end of the element(s) specified by this parameter.
      */
     appendTo(target: any[]): JQuery;
     /**
      * Insert every element in the set of matched elements to the end of the target.
      * 
-     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be inserted at the end of the element(s) specified by this parameter.
+     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be injected at the end of the element(s) specified by this parameter.
      */
     appendTo(target: Element): JQuery;
     /**
      * Insert every element in the set of matched elements to the end of the target.
      * 
-     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be inserted at the end of the element(s) specified by this parameter.
+     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be injected at the end of the element(s) specified by this parameter.
      */
     appendTo(target: string): JQuery;
 
@@ -3202,62 +3202,62 @@ interface JQuery {
     /**
      * Insert every element in the set of matched elements after the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted after the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected after the element(s) specified by this parameter.
      */
     insertAfter(target: JQuery): JQuery;
     /**
      * Insert every element in the set of matched elements after the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted after the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected after the element(s) specified by this parameter.
      */
     insertAfter(target: any[]): JQuery;
     /**
      * Insert every element in the set of matched elements after the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted after the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected after the element(s) specified by this parameter.
      */
     insertAfter(target: Element): JQuery;
     /**
      * Insert every element in the set of matched elements after the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted after the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected after the element(s) specified by this parameter.
      */
     insertAfter(target: Text): JQuery;
     /**
      * Insert every element in the set of matched elements after the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted after the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected after the element(s) specified by this parameter.
      */
     insertAfter(target: string): JQuery;
 
     /**
      * Insert every element in the set of matched elements before the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected before the element(s) specified by this parameter.
      */
     insertBefore(target: JQuery): JQuery;
     /**
      * Insert every element in the set of matched elements before the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected before the element(s) specified by this parameter.
      */
     insertBefore(target: any[]): JQuery;
     /**
      * Insert every element in the set of matched elements before the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected before the element(s) specified by this parameter.
      */
     insertBefore(target: Element): JQuery;
     /**
      * Insert every element in the set of matched elements before the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected before the element(s) specified by this parameter.
      */
     insertBefore(target: Text): JQuery;
     /**
      * Insert every element in the set of matched elements before the target.
      * 
-     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
+     * param target A selector, element, array of elements, HTML string, or jQuery object; the matched set of elements will be injected before the element(s) specified by this parameter.
      */
     insertBefore(target: string): JQuery;
 
@@ -3306,25 +3306,25 @@ interface JQuery {
     /**
      * Insert every element in the set of matched elements to the beginning of the target.
      * 
-     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be inserted at the beginning of the element(s) specified by this parameter.
+     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be injected at the beginning of the element(s) specified by this parameter.
      */
     prependTo(target: JQuery): JQuery;
     /**
      * Insert every element in the set of matched elements to the beginning of the target.
      * 
-     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be inserted at the beginning of the element(s) specified by this parameter.
+     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be injected at the beginning of the element(s) specified by this parameter.
      */
     prependTo(target: any[]): JQuery;
     /**
      * Insert every element in the set of matched elements to the beginning of the target.
      * 
-     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be inserted at the beginning of the element(s) specified by this parameter.
+     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be injected at the beginning of the element(s) specified by this parameter.
      */
     prependTo(target: Element): JQuery;
     /**
      * Insert every element in the set of matched elements to the beginning of the target.
      * 
-     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be inserted at the beginning of the element(s) specified by this parameter.
+     * @param target A selector, element, HTML string, array of elements, or jQuery object; the matched set of elements will be injected at the beginning of the element(s) specified by this parameter.
      */
     prependTo(target: string): JQuery;
 

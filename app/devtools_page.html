@@ -20,6 +20,11 @@
           </select>
         </label>
 
+        <div ng-if="ctrl.selection.auction">
+            <label>Constant bid time: <input type="number" ng-model="ctrl.constantBidTime"/></label>
+            <button type="button" ng-click="ctrl.activeAutobid(ctrl.selection.auction, ctrl.constantBidTime)">Enable Autobid</button>
+        </div>
+
         <h2>{{ctrl.time | date:'H:mm:ss'}}</h2>
 
 
@@ -27,7 +32,7 @@
 
             <h3>{{ctrl.selection.auction.remainingTime}} seconds remain</h3>
             <h3>{{ctrl.selection.auction.currentPrice}} euros</h3>
-            <h3 ng-if="ctrl.selection.auction.endingPatternDetected">Ending Pattern detected !!!</h3>
+            <h1 ng-if="ctrl.selection.auction.endingPatternDetected" style="color: red;">Ending Pattern detected !!!</h1>
             <h4>{{ctrl.selection.auction.pacingBidderNumber}} pacing bidders</h4>
             <h4>{{ctrl.selection.auction.aggresiveBidderNumber}} aggresive bidders</h4>
             <h4>{{ctrl.selection.auction.sleepyActiveBidderNumber}} sleepy active bidders</h4>
@@ -56,6 +61,8 @@
         <script src="bower_components/angularLocalStorage/src/angularLocalStorage.js"></script>
         <script src="bower_components/highcharts/highcharts.js"></script>
 
+
+        <script src="scripts/chrome/messaging.js"></script>
 
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/AuctionController.js"></script>

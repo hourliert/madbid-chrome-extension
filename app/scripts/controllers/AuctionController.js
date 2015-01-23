@@ -14,15 +14,18 @@ var Madbid;
                 this.$interval = $interval;
                 this.networkService = networkService;
                 this.auctionModel = auctionModel;
+                this.messaging = new Madbid.Messaging();
+                //this.messaging.addListener(this.onReceiveMessage);
                 this.selection = {};
                 this.timeSelection = {
                     dateMin: null,
                     dateMax: null
                 };
+                this.constantBidTime = 1;
                 this.model = auctionModel.getModel();
                 networkService.addListener(function (res) {
                     auctionModel.handleUpdate(res);
-                    $scope.$apply();
+                    $scope.$digest();
                 });
                 $interval(angular.bind(this, function () {
                     this.time = new Date();
@@ -38,6 +41,12 @@ var Madbid;
             };
             AuctionController.prototype.observeBidderSelection = function (bidderName) {
                 this.selection.bidder = this.model.getBidder(bidderName);
+            };
+            AuctionController.prototype.activeAutobid = function (auction, constantBidTime) {
+                this.messaging.sendMessage({
+                    autobid: auction.getId(),
+                    bidTime: constantBidTime
+                });
             };
             AuctionController.$inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
             return AuctionController;

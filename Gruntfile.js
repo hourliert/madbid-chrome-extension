@@ -264,7 +264,7 @@ module.exports = function (grunt) {
         options: {
           buildnumber: true,
           background: {
-            target: 'scripts/background.js',
+            target: 'scripts/background.ts',
             exclude: [
               'scripts/chromereload.js'
             ]

@@ -26,9 +26,9 @@ module Madbid {
         [index: number]: BidderType;
     }
     export enum BidderType{
+        Idle,
         Aggressive,
         Pacing,
-        Idle,
         SleepyActive
     }
 
@@ -102,6 +102,8 @@ module Madbid {
             if (nbShortBid >= minAggrBid) return BidderType.Aggressive;
             if (nbShortBid >= 1 && nbLongBid >= minPacingBid && nbTotalBid >= minTotalBid) return BidderType.Pacing;
             if (this.consideredPersistentByAuction[auction.getId()] && nbShortBidForSleepy >= 1) return BidderType.SleepyActive;
+
+            return BidderType.Idle;
         }
         public updateStat(param: ISerializedBidder){
 

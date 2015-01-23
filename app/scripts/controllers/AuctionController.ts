@@ -19,6 +19,9 @@ module Madbid.controllers {
         public time: Date;
         public selection: IUserSelection;
         public timeSelection: ITimeSelection;
+        public constantBidTime: number;
+
+        public messaging: Messaging;
 
         constructor(
             private $scope: ng.IScope,
@@ -27,17 +30,21 @@ module Madbid.controllers {
             private networkService: Madbid.services.NetworkService,
             private auctionModel: Madbid.models.AuctionModel
         ){
+            this.messaging = new Messaging();
+            //this.messaging.addListener(this.onReceiveMessage);
+
             this.selection = {};
             this.timeSelection = {
                 dateMin: null,
                 dateMax: null
             };
+            this.constantBidTime = 1;
 
             this.model = auctionModel.getModel();
 
             networkService.addListener(function(res){
                 auctionModel.handleUpdate(res);
-                $scope.$apply();
+                $scope.$digest();
             });
             $interval(angular.bind(this, function(){
                 this.time = new Date();
@@ -55,6 +62,16 @@ module Madbid.controllers {
         public observeBidderSelection(bidderName: string){
             this.selection.bidder = this.model.getBidder(bidderName);
         }
+        public activeAutobid(auction: Auction, constantBidTime: number){
+            this.messaging.sendMessage({
+                autobid: auction.getId(),
+                bidTime: constantBidTime
+            });
+        }
+
+        /*public onReceiveMessage(msg: any){
+            console.log(msg);
+        }*/
     }
 
     Madbid.registerController('AuctionController', AuctionController);
