@@ -20,6 +20,9 @@ module Madbid.controllers {
         public selection: IUserSelection;
         public timeSelection: ITimeSelection;
         public constantBidTime: number;
+        public autoBidEnable: boolean;
+        public autoBidLive: boolean;
+        public autoBidPlaced: number;
 
         public messaging: Messaging;
 
@@ -31,8 +34,9 @@ module Madbid.controllers {
             private auctionModel: Madbid.models.AuctionModel
         ){
             this.messaging = new Messaging();
-            //this.messaging.addListener(this.onReceiveMessage);
+            this.messaging.addListener((msg) => this.onReceiveMessage(msg));
 
+            this.autoBidPlaced = 0;
             this.selection = {};
             this.timeSelection = {
                 dateMin: null,
@@ -63,6 +67,10 @@ module Madbid.controllers {
             this.selection.bidder = this.model.getBidder(bidderName);
         }
         public activeAutobid(auction: Auction, constantBidTime: number){
+            this.autoBidPlaced = 0;
+            this.autoBidLive = false;
+            this.autoBidEnable = true;
+
             this.messaging.sendMessage({
                 action: 'start',
                 autobid: auction.getId(),
@@ -70,14 +78,24 @@ module Madbid.controllers {
             });
         }
         public stopAutobid(){
+            this.autoBidEnable = false;
+            this.autoBidLive = false;
+
             this.messaging.sendMessage({
                 action: 'stop'
             });
         }
 
-        /*public onReceiveMessage(msg: any){
-            console.log(msg);
-        }*/
+        public onReceiveMessage(msg: any){
+            switch (msg.action){
+                case 'compute':
+                    this.autoBidLive = true;
+                    break;
+                case 'bid':
+                    this.autoBidPlaced = msg.nbAutoBids;
+                    break;
+            }
+        }
     }
 
     Madbid.registerController('AuctionController', AuctionController);

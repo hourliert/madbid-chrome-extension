@@ -31,12 +31,16 @@ module MadbidInjected {
         constructor(){
             this.totalAutoBid = 0;
             this.madbidUsername = MadBidUser.getUserName();
-            interval = setInterval(() => this.compute(), 200);
+            interval = setInterval(() => this.compute(), 400);
         }
 
         public compute(){
             this.madbidHighestBidder = this.madbidAuction.getHighestBidder();
             this.auctionTimeLeft = this.madbidAuctionList.getTimeLeft(this.madbidAuction);
+
+            window.postMessage(JSON.stringify({
+                action: 'compute'
+            }), '*');
 
             if (this.madbidHighestBidder !== this.madbidUsername && this.auctionTimeLeft <= this.bidTime){
                 MadBidEssentials.auctionListBidClick.call({
@@ -44,6 +48,10 @@ module MadbidInjected {
                 });
                 this.totalAutoBid++;
                 console.log('AutoBidder has place one bid at ', this.auctionTimeLeft, 's before the end. Total autobids: ', this.totalAutoBid);
+                window.postMessage(JSON.stringify({
+                    action: 'bid',
+                    nbAutoBids: this.totalAutoBid
+                }), '*');
             }
         }
         public setAuctionId(id: number){

@@ -9,7 +9,7 @@
         <button type="button" ng-click="ctrl.resetCache()">Reset Cache</button>
 
         <label>Select an auction :
-          <select ng-model="ctrl.selection.auction" ng-change="ctrl.changingAuction()" ng-options="val as (val.item.name || key) for (key,val) in ctrl.model.auctions | validAuction">
+          <select ng-model="ctrl.selection.auction" ng-change="ctrl.changingAuction()" ng-options="val as (val.item.name || key) for (key,val) in ctrl.model.auctions | validAuction" ng-disabled="ctrl.autoBidEnable">
             <option value="">--Empty--</option>
           </select>
         </label>
@@ -21,9 +21,10 @@
         </label>
 
         <div ng-if="ctrl.selection.auction">
-            <label>Constant bid time: <input type="number" ng-model="ctrl.constantBidTime"/></label>
-            <button type="button" ng-click="ctrl.activeAutobid(ctrl.selection.auction, ctrl.constantBidTime)">Enable Autobid</button>
-            <button type="button" ng-click="ctrl.stopAutobid()">Disable Autobid</button>
+            <label>Constant bid time: <input type="number" ng-model="ctrl.constantBidTime" ng-disabled="ctrl.autoBidEnable"/></label>
+            <button type="button" ng-click="ctrl.activeAutobid(ctrl.selection.auction, ctrl.constantBidTime)" ng-disabled="ctrl.autoBidEnable">Enable Autobid</button>
+            <button type="button" ng-click="ctrl.stopAutobid()" ng-disabled="!ctrl.autoBidEnable">Disable Autobid</button>
+            <span ng-if="ctrl.autoBidEnable"><strong>Enable</strong> already <strong>{{ctrl.autoBidPlaced}}</strong> placed.</span>
         </div>
 
         <h2>{{ctrl.time | date:'H:mm:ss'}}</h2>

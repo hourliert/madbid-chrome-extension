@@ -9,13 +9,15 @@ var Madbid;
     (function (controllers) {
         var AuctionController = (function () {
             function AuctionController($scope, $timeout, $interval, networkService, auctionModel) {
+                var _this = this;
                 this.$scope = $scope;
                 this.$timeout = $timeout;
                 this.$interval = $interval;
                 this.networkService = networkService;
                 this.auctionModel = auctionModel;
                 this.messaging = new Madbid.Messaging();
-                //this.messaging.addListener(this.onReceiveMessage);
+                this.messaging.addListener(function (msg) { return _this.onReceiveMessage(msg); });
+                this.autoBidPlaced = 0;
                 this.selection = {};
                 this.timeSelection = {
                     dateMin: null,
@@ -43,6 +45,9 @@ var Madbid;
                 this.selection.bidder = this.model.getBidder(bidderName);
             };
             AuctionController.prototype.activeAutobid = function (auction, constantBidTime) {
+                this.autoBidPlaced = 0;
+                this.autoBidLive = false;
+                this.autoBidEnable = true;
                 this.messaging.sendMessage({
                     action: 'start',
                     autobid: auction.getId(),
@@ -50,9 +55,21 @@ var Madbid;
                 });
             };
             AuctionController.prototype.stopAutobid = function () {
+                this.autoBidEnable = false;
+                this.autoBidLive = false;
                 this.messaging.sendMessage({
                     action: 'stop'
                 });
+            };
+            AuctionController.prototype.onReceiveMessage = function (msg) {
+                switch (msg.action) {
+                    case 'compute':
+                        this.autoBidLive = true;
+                        break;
+                    case 'bid':
+                        this.autoBidPlaced = msg.nbAutoBids;
+                        break;
+                }
             };
             AuctionController.$inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
             return AuctionController;
