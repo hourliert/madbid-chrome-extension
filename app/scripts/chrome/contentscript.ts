@@ -8,7 +8,7 @@
 var port = chrome.runtime.connect({name: "madbid"});
 
 port.onMessage.addListener(function(msg) {
-    if (msg.autobid){
+    if (msg.action){
         var s = document.createElement('script');
 
         s.src = chrome.extension.getURL('scripts/injected/autobidder.js');

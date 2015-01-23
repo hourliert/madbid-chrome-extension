@@ -7,40 +7,64 @@
 
 var listener: any,
     interval: any,
-    auctionId: number,
-    constantBidTime: number;
-
-if (interval){
-    clearInterval(interval);
-}
-if (!listener){
-    listener = function(msg){
-        var data =JSON.parse(msg.data);
-        auctionId = data.autobid;
-        constantBidTime = data.bidTime;
-    };
-} else {
-    window.removeEventListener('message', listener);
-}
-window.addEventListener('message', listener);
+    autoBidder: MadbidInjected.AutoBidder,
+    MadBidAuctionList: any,
+    MadBidReference: any;
 
 
 module MadbidInjected {
-
     export class AutoBidder{
-        constructor(){
-            interval = setInterval(function(){
-                console.log('watching for better bid on', auctionId, 'at time', constantBidTime);
+        private auctionId: number;
+        private bidTime: number;
 
-            }, 500);
+        constructor(){
+            interval = setInterval(() => this.compute(), 100);
         }
 
         public compute(){
+            var bidButtonId: string = MadBidAuctionList.getAuctionElementNameClean(this.auctionId, 'bid_button'),
+                auctionList = MadBidReference.get(MadBidAuctionList.REFERENCE_NAME, MadBidAuctionList.getAuctionListNameFromElementName(bidButtonId)),
+                auction = auctionList.get(this.auctionId);
 
+            console.log('getTimeLeft', auctionList.getTimeLeft(auction));
+
+            /*MadBidEssentials.auctionListBidClick.call({
+                id: bidButtonId
+            });*/
+        }
+        public setAuctionId(id: number){
+            this.auctionId = id;
+        }
+        public setBidTime(bidTime: number){
+            this.bidTime = bidTime;
         }
     }
 
+    function cleanUp(){
+        if (interval){
+            clearInterval(interval);
+        }
+        if (listener){
+            window.removeEventListener('message', listener);
+        }
+        delete autoBidder;
+    }
 
-    var test = new AutoBidder();
+
+    if (!listener){
+        listener = function(msg){
+            var data = JSON.parse(msg.data);
+            if (data.action === 'stop'){
+                cleanUp();
+            } else if (data.action === 'start'){
+                autoBidder.setAuctionId(data.autobid);
+                autoBidder.setBidTime(data.bidTime);
+            }
+        };
+    }
+
+    cleanUp();
+    window.addEventListener('message', listener);
+    autoBidder = new AutoBidder();
 }
 

@@ -64,8 +64,14 @@ module Madbid.controllers {
         }
         public activeAutobid(auction: Auction, constantBidTime: number){
             this.messaging.sendMessage({
+                action: 'start',
                 autobid: auction.getId(),
                 bidTime: constantBidTime
+            });
+        }
+        public stopAutobid(){
+            this.messaging.sendMessage({
+                action: 'stop'
             });
         }
 

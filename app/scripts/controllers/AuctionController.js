@@ -44,8 +44,14 @@ var Madbid;
             };
             AuctionController.prototype.activeAutobid = function (auction, constantBidTime) {
                 this.messaging.sendMessage({
+                    action: 'start',
                     autobid: auction.getId(),
                     bidTime: constantBidTime
+                });
+            };
+            AuctionController.prototype.stopAutobid = function () {
+                this.messaging.sendMessage({
+                    action: 'stop'
                 });
             };
             AuctionController.$inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
