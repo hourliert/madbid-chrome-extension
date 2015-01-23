@@ -9,6 +9,8 @@ var listener: any,
     interval: any,
     autoBidder: MadbidInjected.AutoBidder,
     MadBidAuctionList: any,
+    MadBidUser: any,
+    MadBidEssentials: any,
     MadBidReference: any;
 
 
@@ -17,23 +19,39 @@ module MadbidInjected {
         private auctionId: number;
         private bidTime: number;
 
+        private madbidHighestBidder: string;
+        private madbidBidButtonId: string;
+        private madbidAuctionList: any;
+        private madbidAuction: any;
+        private auctionTimeLeft: number;
+
+        private madbidUsername: string;
+        private totalAutoBid: number;
+
         constructor(){
-            interval = setInterval(() => this.compute(), 100);
+            this.totalAutoBid = 0;
+            this.madbidUsername = MadBidUser.getUserName();
+            interval = setInterval(() => this.compute(), 200);
         }
 
         public compute(){
-            var bidButtonId: string = MadBidAuctionList.getAuctionElementNameClean(this.auctionId, 'bid_button'),
-                auctionList = MadBidReference.get(MadBidAuctionList.REFERENCE_NAME, MadBidAuctionList.getAuctionListNameFromElementName(bidButtonId)),
-                auction = auctionList.get(this.auctionId);
+            this.madbidHighestBidder = this.madbidAuction.getHighestBidder();
+            this.auctionTimeLeft = this.madbidAuctionList.getTimeLeft(this.madbidAuction);
 
-            console.log('getTimeLeft', auctionList.getTimeLeft(auction));
-
-            /*MadBidEssentials.auctionListBidClick.call({
-                id: bidButtonId
-            });*/
+            if (this.madbidHighestBidder !== this.madbidUsername && this.auctionTimeLeft <= this.bidTime){
+                MadBidEssentials.auctionListBidClick.call({
+                    id: this.madbidBidButtonId
+                });
+                this.totalAutoBid++;
+                console.log('AutoBidder has place one bid at ', this.auctionTimeLeft, 's before the end. Total autobids: ', this.totalAutoBid);
+            }
         }
         public setAuctionId(id: number){
             this.auctionId = id;
+
+            this.madbidBidButtonId = MadBidAuctionList.getAuctionElementNameClean(this.auctionId, 'bid_button');
+            this.madbidAuctionList = MadBidReference.get(MadBidAuctionList.REFERENCE_NAME, MadBidAuctionList.getAuctionListNameFromElementName(this.madbidBidButtonId));
+            this.madbidAuction = this.madbidAuctionList.get(this.auctionId);
         }
         public setBidTime(bidTime: number){
             this.bidTime = bidTime;
