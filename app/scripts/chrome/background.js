@@ -16,5 +16,11 @@ chrome.runtime.onConnect.addListener(function (port) {
             ports[i].postMessage(msg);
         }
     });
+    port.onDisconnect.addListener(function (port) {
+        var index = ports.indexOf(port);
+        if (index > -1) {
+            ports.splice(index, 1);
+        }
+    });
 });
 //# sourceMappingURL=background.js.map

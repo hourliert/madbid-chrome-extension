@@ -134,6 +134,8 @@ module Madbid.directives {
                     graphBid: IBidMap = {},
                     lastBidIndexSeen: number = 0;
 
+                timeSelection.dateMin = null;
+                timeSelection.dateMax = null;
 
                 function buildSerie(auction: Auction, bidder: Bidder, chart: HighchartsChartObject): HighchartsSeriesOptions{
                     var i: number,

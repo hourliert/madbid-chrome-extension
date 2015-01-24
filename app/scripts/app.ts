@@ -18,7 +18,8 @@ angularModules.forEach((m) => angular.module(m, []));
 angular.module('madbid', angularModules.concat([
     'angularLocalStorage',
     'ngMaterial',
-    'ngMessages'
+    'ngMessages',
+    'ngAnimate'
 ]));
 
 module Madbid {

@@ -1,60 +1,60 @@
-.tabsdemoStaticTabs {
+.tabs {
     /*
    * Animation styles
    */ }
-.tabsdemoStaticTabs #tab1-content {
+.tabs #tab1-content {
     background-color: #3F51B5; }
-.tabsdemoStaticTabs #tab2-content {
+.tabs #tab2-content {
     background-color: #3F51B5; }
-.tabsdemoStaticTabs #tab3-content {
+.tabs #tab3-content {
     background-color: #3F51B5; }
-.tabsdemoStaticTabs .tabpanel-container {
+.tabs .tabpanel-container {
     display: block;
     position: relative;
     background: white;
     border: 0px solid black;
     height: 450px;
     overflow: hidden; }
-.tabsdemoStaticTabs [role="tabpanel"] {
+.tabs [role="tabpanel"] {
     color: white;
     width: 100%;
     height: 100%;
     -webkit-transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s;
     transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s;
     position: absolute; }
-.tabsdemoStaticTabs [role="tabpanel"].ng-leave.ng-leave-active, .tabsdemoStaticTabs [role="tabpanel"].ng-enter {
+.tabs [role="tabpanel"].ng-leave.ng-leave-active, .tabs [role="tabpanel"].ng-enter {
     top: -450px; }
-.tabsdemoStaticTabs [role="tabpanel"].ng-leave, .tabsdemoStaticTabs [role="tabpanel"].ng-enter.ng-enter-active {
+.tabs [role="tabpanel"].ng-leave, .tabs [role="tabpanel"].ng-enter.ng-enter-active {
     top: 0; }
-.tabsdemoStaticTabs [role="tabpanel"].ng-leave {
+.tabs [role="tabpanel"].ng-leave {
     z-index: 100; }
-.tabsdemoStaticTabs .tabpanel-container [role="tabpanel"] {
+.tabs .tabpanel-container [role="tabpanel"] {
     padding: 20px; }
-.tabsdemoStaticTabs .after-tabs-area {
+.tabs .after-tabs-area {
     padding: 25px; }
-.tabsdemoStaticTabs .after-tabs-area > span {
+.tabs .after-tabs-area > span {
     margin-top: 25px;
     padding-right: 15px;
     vertical-align: middle;
     line-height: 30px;
     height: 35px; }
-.tabsdemoStaticTabs .after-tabs-area > md-checkbox {
+.tabs .after-tabs-area > md-checkbox {
     margin-top: 26px;
     margin-left: 0px; }
-.tabsdemoStaticTabs .md-header {
+.tabs .md-header {
     background-color: #1976D2 !important; }
-.tabsdemoStaticTabs md-tab {
+.tabs md-tab {
     color: #90caf9 !important; }
-.tabsdemoStaticTabs md-tab.active, .tabsdemoStaticTabs md-tab:focus {
+.tabs md-tab.active, .tabs md-tab:focus {
     color: white !important; }
-.tabsdemoStaticTabs md-tab[disabled] {
+.tabs md-tab[disabled] {
     opacity: 0.5; }
-.tabsdemoStaticTabs .md-header .md-ripple {
+.tabs .md-header .md-ripple {
     border-color: #FFFF8D !important; }
-.tabsdemoStaticTabs md-tabs-ink-bar {
+.tabs md-tabs-ink-bar {
     background-color: #FFFF8D !important; }
 
-.whiteframedemoBasicUsage md-whiteframe {
+md-whiteframe {
     background: #fff;
     margin: 10px;
     padding: 10px; }
@@ -84,7 +84,7 @@
     position: relative;
 }
 
-.animate-if-slide.ng-enter, .animate-if.ng-leave {
+.animate-if-slide.ng-enter, .animate-if-slide.ng-leave {
     -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
     transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 }

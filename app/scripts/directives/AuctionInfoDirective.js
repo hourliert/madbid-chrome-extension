@@ -118,6 +118,8 @@ var Madbid;
                         },
                         series: []
                     }, highCharts, graphBid = {}, lastBidIndexSeen = 0;
+                    timeSelection.dateMin = null;
+                    timeSelection.dateMax = null;
                     function buildSerie(auction, bidder, chart) {
                         var i, ii, bid, highchartPoint, newLength, serie = {
                             name: 'Bids',
