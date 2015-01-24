@@ -22,7 +22,8 @@
 
         <div ng-if="ctrl.selection.auction">
             <label>Constant bid time: <input type="number" ng-model="ctrl.constantBidTime" ng-disabled="ctrl.autoBidEnable"/></label>
-            <button type="button" ng-click="ctrl.activeAutobid(ctrl.selection.auction, ctrl.constantBidTime)" ng-disabled="ctrl.autoBidEnable">Enable Autobid</button>
+            <label>Max bid to place: <input type="number" ng-model="ctrl.maxBidToPlace" ng-disabled="ctrl.autoBidEnable"/></label>
+            <button type="button" ng-click="ctrl.activeAutobid(ctrl.selection.auction, ctrl.constantBidTime, ctrl.maxBidToPlace)" ng-disabled="ctrl.autoBidEnable">Enable Autobid</button>
             <button type="button" ng-click="ctrl.stopAutobid()" ng-disabled="!ctrl.autoBidEnable">Disable Autobid</button>
             <span ng-if="ctrl.autoBidEnable"><strong>Enable</strong> already <strong>{{ctrl.autoBidPlaced}}</strong> placed.</span>
         </div>

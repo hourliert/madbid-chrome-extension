@@ -18,6 +18,7 @@ module MadbidInjected {
     export class AutoBidder{
         private auctionId: number;
         private bidTime: number;
+        private maxBidToPlace: number;
 
         private madbidHighestBidder: string;
         private madbidBidButtonId: string;
@@ -53,6 +54,13 @@ module MadbidInjected {
                     nbAutoBids: this.totalAutoBid
                 }), '*');
             }
+            if (this.totalAutoBid >= this.maxBidToPlace){
+                window.postMessage(JSON.stringify({
+                    action: 'done',
+                    nbAutoBids: this.totalAutoBid
+                }), '*');
+                MadbidInjected.cleanUp();
+            }
         }
         public setAuctionId(id: number){
             this.auctionId = id;
@@ -64,9 +72,12 @@ module MadbidInjected {
         public setBidTime(bidTime: number){
             this.bidTime = bidTime;
         }
+        public setMaxBidToPlace(max: number){
+            this.maxBidToPlace = max;
+        }
     }
 
-    function cleanUp(){
+    export function cleanUp(){
         if (interval){
             clearInterval(interval);
         }
@@ -85,6 +96,7 @@ module MadbidInjected {
             } else if (data.action === 'start'){
                 autoBidder.setAuctionId(data.autobid);
                 autoBidder.setBidTime(data.bidTime);
+                autoBidder.setMaxBidToPlace(data.maxBid);
             }
         };
     }

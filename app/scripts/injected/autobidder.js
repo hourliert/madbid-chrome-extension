@@ -29,6 +29,13 @@ var MadbidInjected;
                     nbAutoBids: this.totalAutoBid
                 }), '*');
             }
+            if (this.totalAutoBid >= this.maxBidToPlace) {
+                window.postMessage(JSON.stringify({
+                    action: 'done',
+                    nbAutoBids: this.totalAutoBid
+                }), '*');
+                MadbidInjected.cleanUp();
+            }
         };
         AutoBidder.prototype.setAuctionId = function (id) {
             this.auctionId = id;
@@ -38,6 +45,9 @@ var MadbidInjected;
         };
         AutoBidder.prototype.setBidTime = function (bidTime) {
             this.bidTime = bidTime;
+        };
+        AutoBidder.prototype.setMaxBidToPlace = function (max) {
+            this.maxBidToPlace = max;
         };
         return AutoBidder;
     })();
@@ -51,6 +61,7 @@ var MadbidInjected;
         }
         delete autoBidder;
     }
+    MadbidInjected.cleanUp = cleanUp;
     if (!listener) {
         listener = function (msg) {
             var data = JSON.parse(msg.data);
@@ -60,6 +71,7 @@ var MadbidInjected;
             else if (data.action === 'start') {
                 autoBidder.setAuctionId(data.autobid);
                 autoBidder.setBidTime(data.bidTime);
+                autoBidder.setMaxBidToPlace(data.maxBid);
             }
         };
     }

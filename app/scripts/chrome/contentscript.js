@@ -6,12 +6,12 @@
 var port = chrome.runtime.connect({ name: "madbid" });
 var listener = function (msg) {
     var data = JSON.parse(msg.data);
-    if (data.action !== 'bid' && data.action !== 'compute')
+    if (data.action !== 'bid' && data.action !== 'compute' && data.action !== 'done')
         return;
     port.postMessage(data);
 };
 port.onMessage.addListener(function (msg) {
-    if (msg.action && msg.action !== 'bid' && msg.action !== 'compute') {
+    if (msg.action && msg.action !== 'bid' && msg.action !== 'compute' && msg.action !== 'done') {
         var s = document.createElement('script');
         s.src = chrome.extension.getURL('scripts/injected/autobidder.js');
         s.onload = function () {

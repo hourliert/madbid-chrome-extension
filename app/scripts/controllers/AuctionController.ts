@@ -23,6 +23,7 @@ module Madbid.controllers {
         public autoBidEnable: boolean;
         public autoBidLive: boolean;
         public autoBidPlaced: number;
+        public maxBidToPlace: number;
 
         public messaging: Messaging;
 
@@ -43,6 +44,7 @@ module Madbid.controllers {
                 dateMax: null
             };
             this.constantBidTime = 1;
+            this.maxBidToPlace = 1;
 
             this.model = auctionModel.getModel();
 
@@ -66,7 +68,7 @@ module Madbid.controllers {
         public observeBidderSelection(bidderName: string){
             this.selection.bidder = this.model.getBidder(bidderName);
         }
-        public activeAutobid(auction: Auction, constantBidTime: number){
+        public activeAutobid(auction: Auction, constantBidTime: number, maxBidToPlace: number){
             this.autoBidPlaced = 0;
             this.autoBidLive = false;
             this.autoBidEnable = true;
@@ -74,7 +76,8 @@ module Madbid.controllers {
             this.messaging.sendMessage({
                 action: 'start',
                 autobid: auction.getId(),
-                bidTime: constantBidTime
+                bidTime: constantBidTime,
+                maxBid: maxBidToPlace
             });
         }
         public stopAutobid(){
@@ -92,6 +95,11 @@ module Madbid.controllers {
                     this.autoBidLive = true;
                     break;
                 case 'bid':
+                    this.autoBidPlaced = msg.nbAutoBids;
+                    break;
+                case 'done':
+                    this.autoBidEnable = false;
+                    this.autoBidLive = false;
                     this.autoBidPlaced = msg.nbAutoBids;
                     break;
             }

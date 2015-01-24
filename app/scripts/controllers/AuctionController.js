@@ -24,6 +24,7 @@ var Madbid;
                     dateMax: null
                 };
                 this.constantBidTime = 1;
+                this.maxBidToPlace = 1;
                 this.model = auctionModel.getModel();
                 networkService.addListener(function (res) {
                     auctionModel.handleUpdate(res);
@@ -44,14 +45,15 @@ var Madbid;
             AuctionController.prototype.observeBidderSelection = function (bidderName) {
                 this.selection.bidder = this.model.getBidder(bidderName);
             };
-            AuctionController.prototype.activeAutobid = function (auction, constantBidTime) {
+            AuctionController.prototype.activeAutobid = function (auction, constantBidTime, maxBidToPlace) {
                 this.autoBidPlaced = 0;
                 this.autoBidLive = false;
                 this.autoBidEnable = true;
                 this.messaging.sendMessage({
                     action: 'start',
                     autobid: auction.getId(),
-                    bidTime: constantBidTime
+                    bidTime: constantBidTime,
+                    maxBid: maxBidToPlace
                 });
             };
             AuctionController.prototype.stopAutobid = function () {
@@ -67,6 +69,11 @@ var Madbid;
                         this.autoBidLive = true;
                         break;
                     case 'bid':
+                        this.autoBidPlaced = msg.nbAutoBids;
+                        break;
+                    case 'done':
+                        this.autoBidEnable = false;
+                        this.autoBidLive = false;
                         this.autoBidPlaced = msg.nbAutoBids;
                         break;
                 }
