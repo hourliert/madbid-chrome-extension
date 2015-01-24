@@ -12,7 +12,9 @@ var angularModules = [
 ];
 angularModules.forEach(function (m) { return angular.module(m, []); });
 angular.module('madbid', angularModules.concat([
-    'angularLocalStorage'
+    'angularLocalStorage',
+    'ngMaterial',
+    'ngMessages'
 ]));
 var Madbid;
 (function (Madbid) {

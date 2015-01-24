@@ -17,6 +17,7 @@ var Madbid;
                 this.auctionModel = auctionModel;
                 this.messaging = new Madbid.Messaging();
                 this.messaging.addListener(function (msg) { return _this.onReceiveMessage(msg); });
+                this.materialTabs = {};
                 this.autoBidPlaced = 0;
                 this.selection = {};
                 this.timeSelection = {
@@ -77,6 +78,12 @@ var Madbid;
                         this.autoBidPlaced = msg.nbAutoBids;
                         break;
                 }
+            };
+            AuctionController.prototype.next = function () {
+                this.materialTabs.selectedIndex = Math.min(this.materialTabs.selectedIndex + 1, 2);
+            };
+            AuctionController.prototype.previous = function () {
+                this.materialTabs.selectedIndex = Math.min(this.materialTabs.selectedIndex - 1, 0);
             };
             AuctionController.$inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
             return AuctionController;

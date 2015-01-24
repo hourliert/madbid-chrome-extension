@@ -12,6 +12,10 @@ module Madbid.controllers {
         bidder?: Bidder;
     }
 
+    interface IMaterialTabs{
+        selectedIndex?: number;
+    }
+
     export class AuctionController {
         public static $inject = ['$scope', '$timeout', '$interval', 'NetworkService', 'AuctionModel'];
 
@@ -24,6 +28,7 @@ module Madbid.controllers {
         public autoBidLive: boolean;
         public autoBidPlaced: number;
         public maxBidToPlace: number;
+        public materialTabs: IMaterialTabs;
 
         public messaging: Messaging;
 
@@ -37,6 +42,7 @@ module Madbid.controllers {
             this.messaging = new Messaging();
             this.messaging.addListener((msg) => this.onReceiveMessage(msg));
 
+            this.materialTabs = {};
             this.autoBidPlaced = 0;
             this.selection = {};
             this.timeSelection = {
@@ -103,6 +109,13 @@ module Madbid.controllers {
                     this.autoBidPlaced = msg.nbAutoBids;
                     break;
             }
+        }
+
+        public next(){
+            this.materialTabs.selectedIndex = Math.min(this.materialTabs.selectedIndex + 1, 2) ;
+        }
+        public previous(){
+            this.materialTabs.selectedIndex = Math.min(this.materialTabs.selectedIndex - 1, 0) ;
         }
     }
 

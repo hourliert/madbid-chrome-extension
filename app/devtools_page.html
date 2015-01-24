@@ -1,86 +1,141 @@
 <!doctype html>
 <html ng-csp ng-cloak ng-app="madbid">
     <head>
+        <link rel="stylesheet" href="bower_components/angular-material/angular-material.css"/>
+
+        <link rel="stylesheet" href="styles/tabs_animation.css"/>
     </head>
-    <body ng-controller="AuctionController as ctrl">
-        <h1>MadBid extension</h1>
-        <p>You can select an auction ID or select a bidder to view usefull informations.</p>
+    <body ng-controller="AuctionController as ctrl" layout-fill layout="column">
+    <md-toolbar md-scroll-shrink>
+        <h1 class="md-toolbar-tools">
+            <span flex>MadBid extension {{ctrl.time | date:'H:mm:ss'}}</span>
+            <md-button class="md-fab" aria-label="delete cache" ng-click="ctrl.resetCache()">
+                <md-tooltip>
+                    Delete cache
+                </md-tooltip>
+                <md-icon icon="bower_components/material-design-icons/action/svg/production/ic_delete_24px.svg" style="width: 24px; height: 24px;">
+                </md-icon>
+            </md-button>
+        </h1>
+    </md-toolbar>
 
-        <button type="button" ng-click="ctrl.resetCache()">Reset Cache</button>
+    <md-content class="md-padding whiteframedemoBasicUsage">
+        <md-whiteframe class="md-whiteframe-z1 animate-if-slide" layout="column" layout-align="space-around center">
+            <form name="auction">
+                <div layout="row" layout-align="space-around center">
+                    <md-input-container>
+                        <label>Select an auction :</label>
+                        <select ng-model="ctrl.selection.auction" ng-change="ctrl.changingAuction()" ng-options="val as (val.item.name || key) for (key,val) in ctrl.model.auctions | validAuction" ng-disabled="ctrl.autoBidEnable">
+                            <option value="">--Empty--</option>
+                        </select>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Select a bidder :</label>
+                        <select ng-model="ctrl.selection.bidder" ng-options="val as key for (key,val) in ctrl.model.bidders | biddingBidder:ctrl.selection.auction">
+                            <option value="">--Empty--</option>
+                        </select>
+                    </md-input-container>
+                </div>
+            </form>
+        </md-whiteframe>
 
-        <label>Select an auction :
-          <select ng-model="ctrl.selection.auction" ng-change="ctrl.changingAuction()" ng-options="val as (val.item.name || key) for (key,val) in ctrl.model.auctions | validAuction" ng-disabled="ctrl.autoBidEnable">
-            <option value="">--Empty--</option>
-          </select>
-        </label>
+        <md-whiteframe class="md-whiteframe-z1 animate-if-slide" layout="column" layout-align="space-around center" ng-if="ctrl.selection.auction">
+            <form name="autobidder">
+                <div layout="row">
+                    <md-input-container>
+                        <label>Constant bid time</label>
+                        <input type="number" step="any" name="bidtime" ng-model="ctrl.constantBidTime" min="0" max="120" ng-disabled="ctrl.autoBidEnable" required>
+                    </md-input-container>
 
-        <label>Select a bidder :
-          <select ng-model="ctrl.selection.bidder" ng-options="val as key for (key,val) in ctrl.model.bidders | biddingBidder:ctrl.selection.auction">
-            <option value="">--Empty--</option>
-          </select>
-        </label>
+                    <md-input-container>
+                        <label>Max bid to place</label>
+                        <input type="number" step="any" name="bidnumber" ng-model="ctrl.maxBidToPlace" min="0" max="10000" ng-disabled="ctrl.autoBidEnable" required>
+                    </md-input-container>
+                </div>
+                <md-button class="md-raised" ng-click="ctrl.activeAutobid(ctrl.selection.auction, ctrl.constantBidTime, ctrl.maxBidToPlace)" ng-disabled="ctrl.autoBidEnable">Enable Autobid</md-button>
+                <md-button class="md-raised" ng-click="ctrl.stopAutobid()" ng-disabled="!ctrl.autoBidEnable">Disable Autobid</md-button>
+            </form>
+            <!--<div ng-if="ctrl.autoBidEnable"><strong>Enable</strong> already <strong>{{ctrl.autoBidPlaced}}</strong> placed.</div>-->
+        </md-whiteframe>
 
-        <div ng-if="ctrl.selection.auction">
-            <label>Constant bid time: <input type="number" ng-model="ctrl.constantBidTime" ng-disabled="ctrl.autoBidEnable"/></label>
-            <label>Max bid to place: <input type="number" ng-model="ctrl.maxBidToPlace" ng-disabled="ctrl.autoBidEnable"/></label>
-            <button type="button" ng-click="ctrl.activeAutobid(ctrl.selection.auction, ctrl.constantBidTime, ctrl.maxBidToPlace)" ng-disabled="ctrl.autoBidEnable">Enable Autobid</button>
-            <button type="button" ng-click="ctrl.stopAutobid()" ng-disabled="!ctrl.autoBidEnable">Disable Autobid</button>
-            <span ng-if="ctrl.autoBidEnable"><strong>Enable</strong> already <strong>{{ctrl.autoBidPlaced}}</strong> placed.</span>
-        </div>
-
-        <h2>{{ctrl.time | date:'H:mm:ss'}}</h2>
-
-
-        <div ng-if="ctrl.selection.auction">
-
+        <md-whiteframe class="md-whiteframe-z1 animate-if-slide" layout layout-align="space-around center" ng-if="ctrl.selection.auction">
             <h3>{{ctrl.selection.auction.remainingTime}} seconds remain</h3>
             <h3>{{ctrl.selection.auction.currentPrice}} euros</h3>
-            <h1 ng-if="ctrl.selection.auction.endingPatternDetected" style="color: red;">Ending Pattern detected !!!</h1>
             <h4>{{ctrl.selection.auction.pacingBidderNumber}} pacing bidders</h4>
             <h4>{{ctrl.selection.auction.aggresiveBidderNumber}} aggresive bidders</h4>
             <h4>{{ctrl.selection.auction.sleepyActiveBidderNumber}} sleepy active bidders</h4>
             <h4>{{ctrl.selection.auction.persistentBidderNumber}} active bidders</h4>
+        </md-whiteframe>
 
-            <auction-info ng-model="ctrl.model"
-                          auction="ctrl.selection.auction"
-                          bidder="ctrl.selection.bidder"
-                          time-selection="ctrl.timeSelection"></auction-info>
+        <md-whiteframe class="md-whiteframe-z1 animate-if-slide" layout layout-align="center center" ng-if="ctrl.selection.auction.endingPatternDetected" class="animate-if">
+            <h1 style="color: red;">Ending Pattern detected !!!</h1>
+        </md-whiteframe>
 
-            <bidder-info ng-model="ctrl.model"
-                         auction="ctrl.selection.auction"
-                         time-selection="ctrl.timeSelection"
-                         observe-bidder-selection="ctrl.observeBidderSelection(bidderName)"></bidder-info>
+        <div ng-if="ctrl.selection.auction" class="tabsdemoStaticTabs animate-if">
+            <md-tabs class="md-accent" md-selected="ctrl.data.selectedIndex">
+                <md-tab id="tab1" aria-controls="tab1-content">
+                    Bids
+                </md-tab>
+                <md-tab id="tab2" aria-controls="tab2-content">
+                    Bidders
+                </md-tab>
+                <md-tab id="tab3" aria-controls="tab3-content">
+                    Bid Times
+                </md-tab>
+            </md-tabs>
 
-            <bid-info ng-model="ctrl.model"
-                      auction="ctrl.selection.auction"
-                      bidder="ctrl.selection.bidder"
-                      time-selection="ctrl.timeSelection"></bid-info>
+            <ng-switch on="ctrl.data.selectedIndex" class="tabpanel-container">
+                <div role="tabpanel" id="tab1-content" aria-labelledby="tab1" ng-switch-when="0" md-swipe-left="ctrl.next()" md-swipe-right="ctrl.previous()">
+                    <auction-info ng-model="ctrl.model"
+                                  auction="ctrl.selection.auction"
+                                  bidder="ctrl.selection.bidder"
+                                  time-selection="ctrl.timeSelection"></auction-info>
+                </div>
+                <div role="tabpanel" id="tab2-content" aria-labelledby="tab2" ng-switch-when="1" md-swipe-left="ctrl.next()" md-swipe-right="ctrl.previous()">
+                    <bidder-info ng-model="ctrl.model"
+                                 auction="ctrl.selection.auction"
+                                 time-selection="ctrl.timeSelection"
+                                 observe-bidder-selection="ctrl.observeBidderSelection(bidderName)"></bidder-info>
+                </div>
+                <div role="tabpanel" id="tab3-content" aria-labelledby="tab3" ng-switch-when="2" md-swipe-left="ctrl.next()" md-swipe-right="ctrl.previous()">
+                    <bid-info ng-model="ctrl.model"
+                              auction="ctrl.selection.auction"
+                              bidder="ctrl.selection.bidder"
+                              time-selection="ctrl.timeSelection"></bid-info>
+                </div>
+            </ng-switch>
         </div>
+    </md-content>
 
 
-        <script src="bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="bower_components/angular/angular.min.js"></script>
-        <script src="bower_components/angular-cookies/angular-cookies.min.js"></script>
-        <script src="bower_components/angularLocalStorage/src/angularLocalStorage.js"></script>
-        <script src="bower_components/highcharts/highcharts.js"></script>
+    <script src="bower_components/hammerjs/hammer.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-messages/angular-messages.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.js"></script>
+    <script src="bower_components/angular-material/angular-material.js"></script>
+    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="bower_components/angularLocalStorage/src/angularLocalStorage.js"></script>
+    <script src="bower_components/highcharts/highcharts.js"></script>
 
 
-        <script src="scripts/chrome/messaging.js"></script>
+    <script src="scripts/chrome/messaging.js"></script>
 
-        <script src="scripts/app.js"></script>
-        <script src="scripts/controllers/AuctionController.js"></script>
-        <script src="scripts/models/AuctionModel.js"></script>
-        <script src="scripts/services/NetworkService.js"></script>
-        <script src="scripts/directives/AuctionInfoDirective.js"></script>
-        <script src="scripts/directives/BidderInfoDirective.js"></script>
-        <script src="scripts/directives/BidInfoDirective.js"></script>
-        <script src="scripts/filters/ValidAuctionFilter.js"></script>
-        <script src="scripts/filters/BiddingBidderFilter.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/AuctionController.js"></script>
+    <script src="scripts/models/AuctionModel.js"></script>
+    <script src="scripts/services/NetworkService.js"></script>
+    <script src="scripts/directives/AuctionInfoDirective.js"></script>
+    <script src="scripts/directives/BidderInfoDirective.js"></script>
+    <script src="scripts/directives/BidInfoDirective.js"></script>
+    <script src="scripts/filters/ValidAuctionFilter.js"></script>
+    <script src="scripts/filters/BiddingBidderFilter.js"></script>
 
-        <script src="scripts/models/Auction.js"></script>
-        <script src="scripts/models/Bid.js"></script>
-        <script src="scripts/models/Bidder.js"></script>
-        <script src="scripts/models/Item.js"></script>
-        <script src="scripts/models/AuctionHouse.js"></script>
+    <script src="scripts/models/Auction.js"></script>
+    <script src="scripts/models/Bid.js"></script>
+    <script src="scripts/models/Bidder.js"></script>
+    <script src="scripts/models/Item.js"></script>
+    <script src="scripts/models/AuctionHouse.js"></script>
     </body>
 </html>
