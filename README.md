@@ -20,9 +20,9 @@ It has only a panel in developer tools window. This panel contains:
 * active bidder selector
 * charts displaying 
   * bids for the selected auction over time
-  * bidders for the selected aucton over time
+  * bidders for the selected auction over time
   * bid-time distribution (delay before auction end)
-* informations about active bidders. They are classified among following bidder type:
+* informations about active bidders. They are classified among following bidder types:
   * aggresive bidder (bid without pausing during short time period)
   * pacing bidder (tend to bid in spurts over longer periods of time, when they think the auction is about to end)
   * sleepy active bidder (was considered as aggresive or pacing once, and recently bid)
