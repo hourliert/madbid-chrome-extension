@@ -15,18 +15,18 @@ This chrome extension use:
 * typescript 1.4
 * highcarts 4.x
 
-It has only a panel in developer tools window. This panel contains:
+It has only one panel in developer tools window. This panel contains:
 * live auction selector
 * active bidder selector
 * charts displaying 
   * bids for the selected auction over time
   * bidders for the selected auction over time
-  * bid-time distribution (delay before auction end)
-* informations about active bidders. They are classified among following bidder types:
+  * bid-time distribution (delay before auction end) for the selected auction
+* informations about active bidders. They are organized with 3 bidder types:
   * aggresive bidder (bid without pausing during short time period)
   * pacing bidder (tend to bid in spurts over longer periods of time, when they think the auction is about to end)
   * sleepy active bidder (was considered as aggresive or pacing once, and recently bid)
-* detection of ending pattern: 2 or less active bidders plus following pattern satisfied:
+* detection of ending pattern: 2 or less active bidders plus the following pattern matched:
   * A single bid as the auction clock approached zero
   * Several bids (at least one) following that bid within a few seconds
 * Auto bid tool (ability to automaticaly bid if timer approach x secondes). This algorithm uses Madbid page Javascript (version 4.0.2158). Also it works today, it maybe won't in 3 months...
